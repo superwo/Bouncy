@@ -1,2 +1,24 @@
 header.mainheader
-  h1 Hello!
+  .top-line
+    .container
+      .row
+        .col-sm-2
+          .logo
+            a(href="/").logo__link 
+              img(src="img/logo.png", alt="Logo")
+        .col-sm-10
+          ul.main-menu
+            each i, item in {'Hello': '/', 'About': '#', 'Services': '#', 'Portfolio': '#', 'Team': '#', 'Blog': '#', 'Contact': '#'}
+              if (item == 'Hello')
+                li.main-menu__item.main-menu__item--active
+                  a(href=i).main-menu__link.btn.btn--menu= item
+              else
+                li.main-menu__item
+                  a(href=i).main-menu__link.btn.btn--menu= item
+  .mainheader__text
+    h1.mainheader__title We Are Code Cafe
+    p.mainheader__subtitle At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
+  
+  .mainheader__more
+    a(href="#").mainheader__more-link
+      i.ic.ic-down

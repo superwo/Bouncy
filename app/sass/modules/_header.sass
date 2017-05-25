@@ -1,0 +1,63 @@
+.mainheader
+  min-height: 200px
+  height: 100vh
+  background: url(../img/banner.jpg) no-repeat center
+  background-size: cover
+  position: relative
+  display: flex
+  justify-content: center
+  align-items: center
+  &::before
+    position: absolute
+    content: ''
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    background-color: rgba(0,0,0,0.4)
+  &__text
+    color: #fff
+    z-index: 2
+    text-align: center
+    max-width: 605px
+    padding: 0 15px
+  &__title
+    color: #fff
+    font-size: 35px
+    text-transform: uppercase
+    font-weight: 300
+    letter-spacing: 6px
+    margin-bottom: 16px
+
+  &__more
+    position: absolute
+    left: 0
+    bottom: 10%
+    width: 100%
+    text-align: center
+    z-index: 10
+    &-link
+      color: #fff
+      background-color: $accent
+      display: inline-block
+      border-radius: 50%
+      line-height: 36px
+      +size(36px)
+      transition: transform 200ms ease-in-out
+      &:hover
+        transform: scale(0.9)
+
+.top-line
+  position: absolute
+  transition: all 200ms ease
+  left: 0
+  top: 40px
+  width: 100%
+.main-menu
+  display: flex
+  justify-content: flex-end
+  flex-wrap: wrap
+
+.main-menu__item--active
+  .btn--menu
+    border-color: #fff

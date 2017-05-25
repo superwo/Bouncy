@@ -26,18 +26,24 @@ body textarea:required:valid
 	color: #666
 
 html
-	height: 100%
 	box-sizing: border-box
 *, *::before, *::after
 	box-sizing: inherit
 
 .gigantic, .huge, .large, .bigger, .big,
 h1, h2, h3, h4, h5, h6
-  color: #222
-  font-weight: bold
+	color: #222
+	font-family: $title-font
 
 h1
   font-size: 40px
+
+h3, .h3
+	font-size: 20px
+	font-family: $default-font
+	color: #464646
+	font-weight: 400
+	margin: 0 0 20px
 
 .small, small
   font-size: 10px
@@ -47,13 +53,22 @@ h1
 // Basic Text Style
 
 p
-  margin: 0 0 20px 0
+	margin: 0 0 30px 0
+	font-size: 14px
+.largep
+	font-size: 16px
+a
+	color: $accent
+	&:hover
+		color: darken($accent, 10%)
+		text-decoration: none
 
 em
   font-style: italic
 
 strong
-  font-weight: bold
+	font-weight: bold
+	color: #366971
 
 hr
   border: solid #ddd
@@ -62,35 +77,68 @@ hr
   margin: 10px 0 30px
   height: 0
 
+ul, li
+	margin: 0
+	padding: 0
+	list-style-type: none
+
+.ic
+	display: inline-block
+	vertical-align: middle
+
+.ic-down
+	+sprite($s-arr-down)
+.ic-heart
+	+sprite($s-heart)
+.ic-mouse
+	+sprite($s-mouse)
+.ic-bulb
+	+sprite($s-bulb)
+
 body
-	height: 100%
 	font-size: 16px
 	min-width: 320px
 	position: relative
 	line-height: 1.75
 	font-family: $default-font
 	overflow-x: hidden
+	color: $text-color
 
 // footer to bottom
 .wrapper
 	position: relative
-	min-height: 100%
 	overflow: hidden
-header.mainheader
-	position: absolute
-	top: 0
-	left: 0
-	width: 100%
-footer.mainfooter
-	position: absolute
-	left: 0
-	bottom: 0
-	width: 100%
+
+.section
+	padding: 80px 0 100px
+	background-color: #fff
+	&--gray
+		background-color: #f3f3f3
+
+	&__header
+		margin: 0 auto
+		text-align: center
+		max-width: 480px
+		padding: 0 15px
+		margin-bottom: 55px
+
+	&__title
+		font-size: 20px
+		margin: 0 0 20px
+		font-weight: 300
+		text-transform: uppercase
+		font-family: $title-font
+		letter-spacing: 4px
+		color: $title-color
+	&__subtitle
+		margin-bottom: 0px
 
 .img-responsive
 	display: block
 	max-width: 100%
 	height: auto
+.img-center
+	margin: 0 auto
 
 // .hidden
 //   display: none

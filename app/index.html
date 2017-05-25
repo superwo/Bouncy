@@ -24,15 +24,72 @@
   <body>
     <div class="wrapper">
       <header class="mainheader">
-        <h1>Hello!</h1>
+        <div class="top-line">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-2">
+                <div class="logo"><a class="logo__link" href="/"> <img src="img/logo.png" alt="Logo"></a></div>
+              </div>
+              <div class="col-sm-10">
+                <ul class="main-menu">
+                  <li class="main-menu__item main-menu__item--active"><a class="main-menu__link btn btn--menu" href="/">Hello</a></li>
+                  <li class="main-menu__item"><a class="main-menu__link btn btn--menu" href="#">About</a></li>
+                  <li class="main-menu__item"><a class="main-menu__link btn btn--menu" href="#">Services</a></li>
+                  <li class="main-menu__item"><a class="main-menu__link btn btn--menu" href="#">Portfolio</a></li>
+                  <li class="main-menu__item"><a class="main-menu__link btn btn--menu" href="#">Team</a></li>
+                  <li class="main-menu__item"><a class="main-menu__link btn btn--menu" href="#">Blog</a></li>
+                  <li class="main-menu__item"><a class="main-menu__link btn btn--menu" href="#">Contact</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mainheader__text">
+          <h1 class="mainheader__title">We Are Code Cafe</h1>
+          <p class="mainheader__subtitle">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum</p>
+        </div>
+        <div class="mainheader__more"><a class="mainheader__more-link" href="#"><i class="ic ic-down"></i></a></div>
       </header>
       <main class="maincontent"> 
-        <div class="page">
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium repudiandae, debitis harum veniam rerum eligendi beatae veritatis odio dolorem iure ipsa, deleniti qui, voluptatibus porro magnam unde quod! Architecto, official.</p>
-          <svg class="icon icon-home red_mod">
-            <use xlink:href="img/svg/sprite.svg#home"></use>
-          </svg>
-        </div>
+        <section class="section about" id="about">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-5 col-sm-offset-2">
+                <h2 class="section__title">This is Bouncy</h2>
+                <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. </p><a class="btn" href="#">Read More</a>
+              </div>
+              <div class="col-sm-5 hidden-xs"><img class="img-responsive img-center" src="img/ipad.png" alt="Ipad"></div>
+            </div>
+          </div>
+        </section>
+        <section class="section section--gray">
+          <header class="section__header">
+            <h2 class="section__title">Details About Bouncy</h2>
+            <p class="section__subtitle">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+          </header>
+          <ul class="about__controls">
+            <li class="about__controls-item active"><i class="ic ic-heart"></i></li>
+            <li class="about__controls-item"><i class="ic ic-mouse"></i></li>
+            <li class="about__controls-item"><i class="ic ic-bulb"></i></li>
+          </ul>
+          <div class="about__carousel">
+            <div class="about__carousel-item">
+              <div class="container">
+                <div class="row">
+                  <div class="col-sm-11 col-sm-offset-1">
+                    <h3 class="h3">Creative Ideas</h3>
+                  </div>
+                  <div class="col-sm-4 col-sm-offset-1">
+                    <p class="largep">At <a href="#">vero</a> eos et accusamus et iusto odio dignissimos <strong>ducimus</strong> qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores </p>
+                  </div>
+                  <div class="col-sm-5 col-sm-offset-1">
+                    <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque <strong>corrupti quos</strong> dolores et quas molestias <a href="#">excepturi</a> sint occaecati cupiditate non provident, <strong>similique</strong> sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem r</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
         <div class="hidden"></div>
       </main>
     </div>

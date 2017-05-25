@@ -2,12 +2,21 @@
   display: inline-block
   vertical-align: middle
   text-align: center
-  padding: 10px 20px 0
-  height: 40px
-  font: normal 14px/14px Arial, sans-serif
-  transition: all .25s
-  border-radius: 5px
+  padding: 10px 24px 11px
+  color: $title-color
+  height: 37px
+  font: normal 16px/16px $default-font
+  transition: all .10s
+  border-radius: 18px
   background: transparent
-  border: none
+  border: 1px solid $title-color
+  &:hover
+    text-decoration: none
+  &--menu
+    padding: 9px 22px 10px
+    border-color: transparent
+    color: #fff
+    &:hover
+      border-color: #fff
 input[type="submit"].btn, button.btn
   padding-top: 0
