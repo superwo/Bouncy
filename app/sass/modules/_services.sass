@@ -1,0 +1,39 @@
+.services
+  &__content
+    display: flex
+    justify-content: space-between
+  &__nav
+    margin-right: 40px
+    &-item
+      +size(53px)
+      background-color: #81868e
+      border-radius: 50%
+      text-align: center
+      line-height: 53px
+      margin-bottom: 18px
+      cursor: pointer
+      &:hover, &.active
+        background-color: $accent
+      &:last-child
+        margin-bottom: 0
+
+.impression
+  background-image: url(../img/imp-bg.jpg)
+  background-position: center
+  background-size: cover
+  &__author
+    text-transform: uppercase
+    color: #b2b3b3
+    font-weight: 700
+    font-size: 14px
+    &-title
+      color: #b2b2b3
+      text-transform: uppercase
+      font-size: 14px
+      em
+        font-style: normal
+        color: $accent
+  &__img
+    position: absolute
+    right: 0
+    top: -120px

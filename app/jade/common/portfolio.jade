@@ -1,0 +1,19 @@
+section.section.section--gray.portfolio
+  header.section__header
+    h2.section__title THE PORTFOLIO
+    p.section__subtitle At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+  
+  ul.portfolio__filter
+    li.portfolio__filter-item.active <a href="#" class="portfolio__filter-link">All Works</a>
+    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">Print</a>
+    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">Identity</a>
+    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">Branding</a>
+    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">Web</a>
+    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">HTML</a>
+    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">Wordpress</a>
+    
+  li.portfolio__list
+    -for(var i = 1; i<=12; i++)
+      li.portfolio__list-item
+        img(src="img/portfolio/pf" + i + ".png", alt="")
+        

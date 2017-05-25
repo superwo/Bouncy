@@ -13,3 +13,50 @@
     background-color: #81868e
     &:hover, &.active
       background-color: $accent
+
+.featured
+  padding-bottom: 0
+  &__list
+    display: flex
+    &-item
+      height: 320px
+      background-size: cover
+      background-position: center
+      transition: all 200ms ease
+      position: relative
+      flex: 1
+      overflow: hidden
+      &:hover
+        flex: 2
+        .featured__title
+          transform: translateY(100%)
+  &__title
+    display: block
+    position: absolute
+    top: 0
+    left: 0
+    bottom: 0
+    right: 0
+    background-color: rgba(0,0,0,0.8)
+    display: flex
+    align-items: center
+    justify-content: center
+    text-transform: uppercase
+    font-size: 20px
+    font-family: $title-font
+    letter-spacing: 4px
+    color: #fff
+    transform: translateY(0)
+    transition: all 200ms ease-in-out
+  &__bottom
+    background: url(../img/featured-bottom.jpg)
+    background-size: cover
+    font-size: 20px
+    color: #fff
+    strong
+      color: inherit
+    &-inner
+      height: 115px
+      display: flex
+      align-items: center
+      justify-content: space-between
