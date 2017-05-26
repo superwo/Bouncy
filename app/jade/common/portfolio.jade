@@ -4,16 +4,140 @@ section.section.section--gray.portfolio
     p.section__subtitle At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
   
   ul.portfolio__filter
-    li.portfolio__filter-item.active <a href="#" class="portfolio__filter-link">All Works</a>
-    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">Print</a>
-    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">Identity</a>
-    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">Branding</a>
-    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">Web</a>
-    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">HTML</a>
-    li.portfolio__filter-item <a href="#" class="portfolio__filter-link">Wordpress</a>
+    li.portfolio__filter-item.active <button type="button" data-filter="*" class="portfolio__filter-link">All Works</button>
+    li.portfolio__filter-item <button type="button" data-filter=".print" class="portfolio__filter-link">Print</button>
+    li.portfolio__filter-item <button type="button" data-filter=".identity" class="portfolio__filter-link">Identity</button>
+    li.portfolio__filter-item <button type="button" data-filter=".branding" class="portfolio__filter-link">Branding</button>
+    li.portfolio__filter-item <button type="button" data-filter=".web" class="portfolio__filter-link">Web</button>
+    li.portfolio__filter-item <button type="button" data-filter=".html" class="portfolio__filter-link">HTML</button>
+    li.portfolio__filter-item <button type="button" data-filter=".wordpress" class="portfolio__filter-link">Wordpress</button>
     
-  li.portfolio__list
-    -for(var i = 1; i<=12; i++)
-      li.portfolio__list-item
-        img(src="img/portfolio/pf" + i + ".png", alt="")
-        
+  .container
+    
+    ul.portfolio__list.grid
+      li.portfolio__list-item.grid-item.mix.print.branding
+        img(src="img/portfolio/pf1.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.identity
+        img(src="img/portfolio/pf2.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.web
+        img(src="img/portfolio/pf3.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.html.print
+        img(src="img/portfolio/pf4.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.wordpress.print
+        img(src="img/portfolio/pf5.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.branding.identity
+        img(src="img/portfolio/pf6.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.wordpress.print
+        img(src="img/portfolio/pf7.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.html
+        img(src="img/portfolio/pf8.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.web.print
+        img(src="img/portfolio/pf9.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.html
+        img(src="img/portfolio/pf10.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.wordpress
+        img(src="img/portfolio/pf11.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+      li.portfolio__list-item.grid-item.mix.branding
+        img(src="img/portfolio/pf12.png", alt="")
+        .portfolio__descr
+          h4.section__title Title Here
+          p.littlep At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+          ul.portfolio__social
+            li
+              a(href="#") <i class="ic ic-link"></i>
+            li
+              a(href="#") <i class="ic ic-lheart"></i>
+          
+    .portfolio__cite
+      span At vero eos et <strong>accusamus</strong> et iusto odio <strong>dignissimos</strong> ducimus qui blanditiis 
+      a(href="#").btn.btn--white Start Project
+
+  

@@ -17,5 +17,11 @@ module.exports = {
       test: /\.js$/,
       exclude: /node_modules/
     }]
+  },
+  resolve: {
+    alias: {
+      'masonry': 'masonry-layout',
+      'isotope': 'isotope-layout'
+    }
   }
 }

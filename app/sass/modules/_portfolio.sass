@@ -1,6 +1,6 @@
 .portfolio
   &__filter
-    margin-top: 80px
+    margin: 80px 0 60px
     display: block
     text-align: center
     &-item
@@ -17,6 +17,9 @@
       font-size: 16px
       color: #464646
       position: relative
+      border: none
+      background: none
+      outline: none
       &:hover
         color: #464646
         &::after
@@ -32,3 +35,78 @@
         bottom: -10px
         transition: transform 200ms ease-in-out
         transform: scaleX(0)
+
+  &__list
+    margin: 0 auto 30px
+    display: block
+
+    &-item
+      width: 270px
+      margin-bottom: 10px
+      position: relative
+      display: inline-block
+      transition: all 200ms
+      &:hover
+        .portfolio__descr
+          opacity: 1
+      .section__title
+        color: $accent
+        position: relative
+        margin-bottom: 35px
+        &::after
+          content: ''
+          position: absolute
+          display: block
+          width: 23px
+          height: 1px
+          left: 0
+          bottom: -10px
+          background-color: $accent
+      img
+        width: 270px
+        height: auto
+
+  &__descr
+    position: absolute
+    opacity: 0
+    transition: opacity 500ms ease
+    +coverdiv
+    padding: 40px
+    display: flex
+    flex-direction: column
+    justify-content: center
+    background-color: rgba(0,0,0,0.75)
+    color: #b2b3b3
+  &__social
+    position: absolute
+    bottom: 20px
+    left: 40px
+    li
+      +size(28px)
+      background-color: #000
+      border-radius: 50%
+      display: inline-block
+      text-align: center
+      line-height: 28px
+      transition: all 200ms ease
+      a
+        display: block
+        height: 100%
+      &:hover
+        background-color: $accent
+
+  &__cite
+    background-image: url(../img/prf-bg.jpg)
+    background-size: cover
+    padding: 45px 0 55px
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    span
+      color: #fff
+      font-size: 20px
+      margin-bottom: 30px
+      font-weight: 400
+      strong
+        color: #fff

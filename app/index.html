@@ -157,28 +157,139 @@
             <p class="section__subtitle">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
           </header>
           <ul class="portfolio__filter">
-            <li class="portfolio__filter-item active"><a href="#" class="portfolio__filter-link">All Works</a></li>
-            <li class="portfolio__filter-item"><a href="#" class="portfolio__filter-link">Print</a></li>
-            <li class="portfolio__filter-item"><a href="#" class="portfolio__filter-link">Identity</a></li>
-            <li class="portfolio__filter-item"><a href="#" class="portfolio__filter-link">Branding</a></li>
-            <li class="portfolio__filter-item"><a href="#" class="portfolio__filter-link">Web</a></li>
-            <li class="portfolio__filter-item"><a href="#" class="portfolio__filter-link">HTML</a></li>
-            <li class="portfolio__filter-item"><a href="#" class="portfolio__filter-link">Wordpress</a></li>
+            <li class="portfolio__filter-item active"><button type="button" data-filter="*" class="portfolio__filter-link">All Works</button></li>
+            <li class="portfolio__filter-item"><button type="button" data-filter=".print" class="portfolio__filter-link">Print</button></li>
+            <li class="portfolio__filter-item"><button type="button" data-filter=".identity" class="portfolio__filter-link">Identity</button></li>
+            <li class="portfolio__filter-item"><button type="button" data-filter=".branding" class="portfolio__filter-link">Branding</button></li>
+            <li class="portfolio__filter-item"><button type="button" data-filter=".web" class="portfolio__filter-link">Web</button></li>
+            <li class="portfolio__filter-item"><button type="button" data-filter=".html" class="portfolio__filter-link">HTML</button></li>
+            <li class="portfolio__filter-item"><button type="button" data-filter=".wordpress" class="portfolio__filter-link">Wordpress</button></li>
           </ul>
-          <li class="portfolio__list">
-            <li class="portfolio__list-item"><img src="img/portfolio/pf1.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf2.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf3.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf4.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf5.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf6.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf7.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf8.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf9.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf10.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf11.png" alt=""></li>
-            <li class="portfolio__list-item"><img src="img/portfolio/pf12.png" alt=""></li>
-          </li>
+          <div class="container">
+            <ul class="portfolio__list grid">
+              <li class="portfolio__list-item grid-item mix print branding"><img src="img/portfolio/pf1.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix identity"><img src="img/portfolio/pf2.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix web"><img src="img/portfolio/pf3.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix html print"><img src="img/portfolio/pf4.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix wordpress print"><img src="img/portfolio/pf5.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix branding identity"><img src="img/portfolio/pf6.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix wordpress print"><img src="img/portfolio/pf7.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix html"><img src="img/portfolio/pf8.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix web print"><img src="img/portfolio/pf9.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix html"><img src="img/portfolio/pf10.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix wordpress"><img src="img/portfolio/pf11.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="portfolio__list-item grid-item mix branding"><img src="img/portfolio/pf12.png" alt="">
+                <div class="portfolio__descr">
+                  <h4 class="section__title">Title Here</h4>
+                  <p class="littlep">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium</p>
+                  <ul class="portfolio__social">
+                    <li><a href="#"><i class="ic ic-link"></i></a></li>
+                    <li><a href="#"><i class="ic ic-lheart"></i></a></li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+            <div class="portfolio__cite"><span>At vero eos et <strong>accusamus</strong> et iusto odio <strong>dignissimos</strong> ducimus qui blanditiis </span><a class="btn btn--white" href="#">Start Project</a></div>
+          </div>
         </section>
         <div class="hidden"></div>
       </main>
