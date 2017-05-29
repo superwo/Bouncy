@@ -1,0 +1,74 @@
+.team
+  padding-bottom: 0
+  &__carousel
+    margin-bottom: 150px
+  &__img
+    max-width: 285px
+  &__descr
+    text-align: right
+  &__name
+    margin-bottom: 0px
+  &__title
+    font-size: 14px
+    display: block
+    font-family: $title-font
+    text-transform: uppercase
+    font-style: italic
+    margin-bottom: 20px
+  &__text
+    margin-bottom: 60px
+
+  &__qual
+    position: relative
+    margin-bottom: 55px
+    span
+      font-size: 16px
+      font-family: $title-font
+      letter-spacing: 1px
+      text-transform: uppercase
+      display: inline-block
+      position: absolute
+      left: 0
+      top: -29px
+      &:last-of-type
+        right: 0
+        left: auto
+    &-line
+      width: 100%
+      height: 4px
+      background-color: #e1e4e9
+      position: relative
+      div
+        position: absolute
+        content: ''
+        width: 0
+        height: 4px
+        background: $accent
+        top: 0
+        left: 0
+
+.testimonials
+  &__carousel
+    &-item
+      background: #fff
+      box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.05)
+      padding: 50px 0 60px
+
+  &__pic
+    +size(130px)
+    border-radius: 50%
+    overflow: hidden
+
+  &__text
+    font-size: 16px
+    margin-bottom: 20px
+
+  &__name
+    font-size: 16px
+    text-transform: uppercase
+    color: #19bd9a
+    line-height: 1.1
+  &__title
+    color: #464646
+    text-transform: uppercase
+    font-size: 14px

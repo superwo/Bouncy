@@ -1,0 +1,55 @@
+section.section.newsletter
+  header.section__header
+    h2.section__title Subscribe Us
+    p.section__subtitle At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+    
+  form
+    .form
+      input(type="text", placeholder="Email Address")
+      input(type="submit", value="Submit")
+
+section.section.section--gray.contacts
+  header.section__header
+    h2.section__title Contact Us
+    p.section__subtitle At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
+    
+  .container
+    ul.contacts__list
+      li.contacts__item
+        .contacts__item-header
+          i.ic.ic-mail
+        .contacts__info
+          h3.contacts__info-title Email
+          a(href="#").contacts__det hello@codecafe.com
+          a(href="#").contacts__det Personal@codecafe.com
+      li.contacts__item
+        .contacts__item-header
+          i.ic.ic-location
+        .contacts__info
+          h3.contacts__info-title OUR OFFICE
+          .contacts__det 240 Bhatikhana, 8200 Barisal
+          .contacts__det Bangladesh
+      li.contacts__item
+        .contacts__item-header
+          i.ic.ic-phone
+        .contacts__info
+          h3.contacts__info-title Phone
+          a(href="#").contacts__det +00 11 66 99 66 44
+          a(href="#").contacts__det 11 99 66 44 065
+    
+
+section.section.feedback
+  .container
+    form(action="#", method="post").form
+      input(type="text", placeholder="Your name")
+      input(type="email", placeholder="Email Address")
+      input(type="text", placeholder="Subject")
+      textarea(placeholder="Your Message")
+      input(type="submit", Value="Submit Now")
+
+section.map
+  .map__overlay
+    span.map__overlay-title Find us on the map
+    span.map__overlay-icon <i class="ic ic-down"></i>
+    
+  img(src="img/map.png", alt="Map").map__image

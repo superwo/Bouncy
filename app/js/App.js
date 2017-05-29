@@ -63,1769 +63,11 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * getSize v2.0.2
- * measure size of elements
- * MIT license
- */
-
-/*jshint browser: true, strict: true, undef: true, unused: true */
-/*global define: false, module: false, console: false */
-
-( function( window, factory ) {
-  'use strict';
-
-  if ( true ) {
-    // AMD
-    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
-      return factory();
-    }.call(exports, __webpack_require__, exports, module),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory();
-  } else {
-    // browser global
-    window.getSize = factory();
-  }
-
-})( window, function factory() {
-'use strict';
-
-// -------------------------- helpers -------------------------- //
-
-// get a number from a string, not a percentage
-function getStyleSize( value ) {
-  var num = parseFloat( value );
-  // not a percent like '100%', and a number
-  var isValid = value.indexOf('%') == -1 && !isNaN( num );
-  return isValid && num;
-}
-
-function noop() {}
-
-var logError = typeof console == 'undefined' ? noop :
-  function( message ) {
-    console.error( message );
-  };
-
-// -------------------------- measurements -------------------------- //
-
-var measurements = [
-  'paddingLeft',
-  'paddingRight',
-  'paddingTop',
-  'paddingBottom',
-  'marginLeft',
-  'marginRight',
-  'marginTop',
-  'marginBottom',
-  'borderLeftWidth',
-  'borderRightWidth',
-  'borderTopWidth',
-  'borderBottomWidth'
-];
-
-var measurementsLength = measurements.length;
-
-function getZeroSize() {
-  var size = {
-    width: 0,
-    height: 0,
-    innerWidth: 0,
-    innerHeight: 0,
-    outerWidth: 0,
-    outerHeight: 0
-  };
-  for ( var i=0; i < measurementsLength; i++ ) {
-    var measurement = measurements[i];
-    size[ measurement ] = 0;
-  }
-  return size;
-}
-
-// -------------------------- getStyle -------------------------- //
-
-/**
- * getStyle, get style of element, check for Firefox bug
- * https://bugzilla.mozilla.org/show_bug.cgi?id=548397
- */
-function getStyle( elem ) {
-  var style = getComputedStyle( elem );
-  if ( !style ) {
-    logError( 'Style returned ' + style +
-      '. Are you running this code in a hidden iframe on Firefox? ' +
-      'See http://bit.ly/getsizebug1' );
-  }
-  return style;
-}
-
-// -------------------------- setup -------------------------- //
-
-var isSetup = false;
-
-var isBoxSizeOuter;
-
-/**
- * setup
- * check isBoxSizerOuter
- * do on first getSize() rather than on page load for Firefox bug
- */
-function setup() {
-  // setup once
-  if ( isSetup ) {
-    return;
-  }
-  isSetup = true;
-
-  // -------------------------- box sizing -------------------------- //
-
-  /**
-   * WebKit measures the outer-width on style.width on border-box elems
-   * IE & Firefox<29 measures the inner-width
-   */
-  var div = document.createElement('div');
-  div.style.width = '200px';
-  div.style.padding = '1px 2px 3px 4px';
-  div.style.borderStyle = 'solid';
-  div.style.borderWidth = '1px 2px 3px 4px';
-  div.style.boxSizing = 'border-box';
-
-  var body = document.body || document.documentElement;
-  body.appendChild( div );
-  var style = getStyle( div );
-
-  getSize.isBoxSizeOuter = isBoxSizeOuter = getStyleSize( style.width ) == 200;
-  body.removeChild( div );
-
-}
-
-// -------------------------- getSize -------------------------- //
-
-function getSize( elem ) {
-  setup();
-
-  // use querySeletor if elem is string
-  if ( typeof elem == 'string' ) {
-    elem = document.querySelector( elem );
-  }
-
-  // do not proceed on non-objects
-  if ( !elem || typeof elem != 'object' || !elem.nodeType ) {
-    return;
-  }
-
-  var style = getStyle( elem );
-
-  // if hidden, everything is 0
-  if ( style.display == 'none' ) {
-    return getZeroSize();
-  }
-
-  var size = {};
-  size.width = elem.offsetWidth;
-  size.height = elem.offsetHeight;
-
-  var isBorderBox = size.isBorderBox = style.boxSizing == 'border-box';
-
-  // get all measurements
-  for ( var i=0; i < measurementsLength; i++ ) {
-    var measurement = measurements[i];
-    var value = style[ measurement ];
-    var num = parseFloat( value );
-    // any 'auto', 'medium' value will be 0
-    size[ measurement ] = !isNaN( num ) ? num : 0;
-  }
-
-  var paddingWidth = size.paddingLeft + size.paddingRight;
-  var paddingHeight = size.paddingTop + size.paddingBottom;
-  var marginWidth = size.marginLeft + size.marginRight;
-  var marginHeight = size.marginTop + size.marginBottom;
-  var borderWidth = size.borderLeftWidth + size.borderRightWidth;
-  var borderHeight = size.borderTopWidth + size.borderBottomWidth;
-
-  var isBorderBoxSizeOuter = isBorderBox && isBoxSizeOuter;
-
-  // overwrite width and height if we can get it from style
-  var styleWidth = getStyleSize( style.width );
-  if ( styleWidth !== false ) {
-    size.width = styleWidth +
-      // add padding and border unless it's already including it
-      ( isBorderBoxSizeOuter ? 0 : paddingWidth + borderWidth );
-  }
-
-  var styleHeight = getStyleSize( style.height );
-  if ( styleHeight !== false ) {
-    size.height = styleHeight +
-      // add padding and border unless it's already including it
-      ( isBorderBoxSizeOuter ? 0 : paddingHeight + borderHeight );
-  }
-
-  size.innerWidth = size.width - ( paddingWidth + borderWidth );
-  size.innerHeight = size.height - ( paddingHeight + borderHeight );
-
-  size.outerWidth = size.width + marginWidth;
-  size.outerHeight = size.height + marginHeight;
-
-  return size;
-}
-
-return getSize;
-
-});
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
- * Isotope LayoutMode
- */
-
-( function( window, factory ) {
-  // universal module definition
-  /* jshint strict: false */ /*globals define, module, require */
-  if ( true ) {
-    // AMD
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-        __webpack_require__(0),
-        __webpack_require__(2)
-      ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory(
-      require('get-size'),
-      require('outlayer')
-    );
-  } else {
-    // browser global
-    window.Isotope = window.Isotope || {};
-    window.Isotope.LayoutMode = factory(
-      window.getSize,
-      window.Outlayer
-    );
-  }
-
-}( window, function factory( getSize, Outlayer ) {
-  'use strict';
-
-  // layout mode class
-  function LayoutMode( isotope ) {
-    this.isotope = isotope;
-    // link properties
-    if ( isotope ) {
-      this.options = isotope.options[ this.namespace ];
-      this.element = isotope.element;
-      this.items = isotope.filteredItems;
-      this.size = isotope.size;
-    }
-  }
-
-  var proto = LayoutMode.prototype;
-
-  /**
-   * some methods should just defer to default Outlayer method
-   * and reference the Isotope instance as `this`
-  **/
-  var facadeMethods = [
-    '_resetLayout',
-    '_getItemLayoutPosition',
-    '_manageStamp',
-    '_getContainerSize',
-    '_getElementOffset',
-    'needsResizeLayout',
-    '_getOption'
-  ];
-
-  facadeMethods.forEach( function( methodName ) {
-    proto[ methodName ] = function() {
-      return Outlayer.prototype[ methodName ].apply( this.isotope, arguments );
-    };
-  });
-
-  // -----  ----- //
-
-  // for horizontal layout modes, check vertical size
-  proto.needsVerticalResizeLayout = function() {
-    // don't trigger if size did not change
-    var size = getSize( this.isotope.element );
-    // check that this.size and size are there
-    // IE8 triggers resize on body size change, so they might not be
-    var hasSizes = this.isotope.size && size;
-    return hasSizes && size.innerHeight != this.isotope.size.innerHeight;
-  };
-
-  // ----- measurements ----- //
-
-  proto._getMeasurement = function() {
-    this.isotope._getMeasurement.apply( this, arguments );
-  };
-
-  proto.getColumnWidth = function() {
-    this.getSegmentSize( 'column', 'Width' );
-  };
-
-  proto.getRowHeight = function() {
-    this.getSegmentSize( 'row', 'Height' );
-  };
-
-  /**
-   * get columnWidth or rowHeight
-   * segment: 'column' or 'row'
-   * size 'Width' or 'Height'
-  **/
-  proto.getSegmentSize = function( segment, size ) {
-    var segmentName = segment + size;
-    var outerSize = 'outer' + size;
-    // columnWidth / outerWidth // rowHeight / outerHeight
-    this._getMeasurement( segmentName, outerSize );
-    // got rowHeight or columnWidth, we can chill
-    if ( this[ segmentName ] ) {
-      return;
-    }
-    // fall back to item of first element
-    var firstItemSize = this.getFirstItemSize();
-    this[ segmentName ] = firstItemSize && firstItemSize[ outerSize ] ||
-      // or size of container
-      this.isotope.size[ 'inner' + size ];
-  };
-
-  proto.getFirstItemSize = function() {
-    var firstItem = this.isotope.filteredItems[0];
-    return firstItem && firstItem.element && getSize( firstItem.element );
-  };
-
-  // ----- methods that should reference isotope ----- //
-
-  proto.layout = function() {
-    this.isotope.layout.apply( this.isotope, arguments );
-  };
-
-  proto.getSize = function() {
-    this.isotope.getSize();
-    this.size = this.isotope.size;
-  };
-
-  // -------------------------- create -------------------------- //
-
-  LayoutMode.modes = {};
-
-  LayoutMode.create = function( namespace, options ) {
-
-    function Mode() {
-      LayoutMode.apply( this, arguments );
-    }
-
-    Mode.prototype = Object.create( proto );
-    Mode.prototype.constructor = Mode;
-
-    // default options
-    if ( options ) {
-      Mode.options = options;
-    }
-
-    Mode.prototype.namespace = namespace;
-    // register in Isotope
-    LayoutMode.modes[ namespace ] = Mode;
-
-    return Mode;
-  };
-
-  return LayoutMode;
-
-}));
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * Outlayer v2.1.1
- * the brains and guts of a layout library
- * MIT license
- */
-
-( function( window, factory ) {
-  'use strict';
-  // universal module definition
-  /* jshint strict: false */ /* globals define, module, require */
-  if ( true ) {
-    // AMD - RequireJS
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-        __webpack_require__(4),
-        __webpack_require__(0),
-        __webpack_require__(5),
-        __webpack_require__(18)
-      ], __WEBPACK_AMD_DEFINE_RESULT__ = function( EvEmitter, getSize, utils, Item ) {
-        return factory( window, EvEmitter, getSize, utils, Item);
-      }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else if ( typeof module == 'object' && module.exports ) {
-    // CommonJS - Browserify, Webpack
-    module.exports = factory(
-      window,
-      require('ev-emitter'),
-      require('get-size'),
-      require('fizzy-ui-utils'),
-      require('./item')
-    );
-  } else {
-    // browser global
-    window.Outlayer = factory(
-      window,
-      window.EvEmitter,
-      window.getSize,
-      window.fizzyUIUtils,
-      window.Outlayer.Item
-    );
-  }
-
-}( window, function factory( window, EvEmitter, getSize, utils, Item ) {
-'use strict';
-
-// ----- vars ----- //
-
-var console = window.console;
-var jQuery = window.jQuery;
-var noop = function() {};
-
-// -------------------------- Outlayer -------------------------- //
-
-// globally unique identifiers
-var GUID = 0;
-// internal store of all Outlayer intances
-var instances = {};
-
-
-/**
- * @param {Element, String} element
- * @param {Object} options
- * @constructor
- */
-function Outlayer( element, options ) {
-  var queryElement = utils.getQueryElement( element );
-  if ( !queryElement ) {
-    if ( console ) {
-      console.error( 'Bad element for ' + this.constructor.namespace +
-        ': ' + ( queryElement || element ) );
-    }
-    return;
-  }
-  this.element = queryElement;
-  // add jQuery
-  if ( jQuery ) {
-    this.$element = jQuery( this.element );
-  }
-
-  // options
-  this.options = utils.extend( {}, this.constructor.defaults );
-  this.option( options );
-
-  // add id for Outlayer.getFromElement
-  var id = ++GUID;
-  this.element.outlayerGUID = id; // expando
-  instances[ id ] = this; // associate via id
-
-  // kick it off
-  this._create();
-
-  var isInitLayout = this._getOption('initLayout');
-  if ( isInitLayout ) {
-    this.layout();
-  }
-}
-
-// settings are for internal use only
-Outlayer.namespace = 'outlayer';
-Outlayer.Item = Item;
-
-// default options
-Outlayer.defaults = {
-  containerStyle: {
-    position: 'relative'
-  },
-  initLayout: true,
-  originLeft: true,
-  originTop: true,
-  resize: true,
-  resizeContainer: true,
-  // item options
-  transitionDuration: '0.4s',
-  hiddenStyle: {
-    opacity: 0,
-    transform: 'scale(0.001)'
-  },
-  visibleStyle: {
-    opacity: 1,
-    transform: 'scale(1)'
-  }
-};
-
-var proto = Outlayer.prototype;
-// inherit EvEmitter
-utils.extend( proto, EvEmitter.prototype );
-
-/**
- * set options
- * @param {Object} opts
- */
-proto.option = function( opts ) {
-  utils.extend( this.options, opts );
-};
-
-/**
- * get backwards compatible option value, check old name
- */
-proto._getOption = function( option ) {
-  var oldOption = this.constructor.compatOptions[ option ];
-  return oldOption && this.options[ oldOption ] !== undefined ?
-    this.options[ oldOption ] : this.options[ option ];
-};
-
-Outlayer.compatOptions = {
-  // currentName: oldName
-  initLayout: 'isInitLayout',
-  horizontal: 'isHorizontal',
-  layoutInstant: 'isLayoutInstant',
-  originLeft: 'isOriginLeft',
-  originTop: 'isOriginTop',
-  resize: 'isResizeBound',
-  resizeContainer: 'isResizingContainer'
-};
-
-proto._create = function() {
-  // get items from children
-  this.reloadItems();
-  // elements that affect layout, but are not laid out
-  this.stamps = [];
-  this.stamp( this.options.stamp );
-  // set container style
-  utils.extend( this.element.style, this.options.containerStyle );
-
-  // bind resize method
-  var canBindResize = this._getOption('resize');
-  if ( canBindResize ) {
-    this.bindResize();
-  }
-};
-
-// goes through all children again and gets bricks in proper order
-proto.reloadItems = function() {
-  // collection of item elements
-  this.items = this._itemize( this.element.children );
-};
-
-
-/**
- * turn elements into Outlayer.Items to be used in layout
- * @param {Array or NodeList or HTMLElement} elems
- * @returns {Array} items - collection of new Outlayer Items
- */
-proto._itemize = function( elems ) {
-
-  var itemElems = this._filterFindItemElements( elems );
-  var Item = this.constructor.Item;
-
-  // create new Outlayer Items for collection
-  var items = [];
-  for ( var i=0; i < itemElems.length; i++ ) {
-    var elem = itemElems[i];
-    var item = new Item( elem, this );
-    items.push( item );
-  }
-
-  return items;
-};
-
-/**
- * get item elements to be used in layout
- * @param {Array or NodeList or HTMLElement} elems
- * @returns {Array} items - item elements
- */
-proto._filterFindItemElements = function( elems ) {
-  return utils.filterFindElements( elems, this.options.itemSelector );
-};
-
-/**
- * getter method for getting item elements
- * @returns {Array} elems - collection of item elements
- */
-proto.getItemElements = function() {
-  return this.items.map( function( item ) {
-    return item.element;
-  });
-};
-
-// ----- init & layout ----- //
-
-/**
- * lays out all items
- */
-proto.layout = function() {
-  this._resetLayout();
-  this._manageStamps();
-
-  // don't animate first layout
-  var layoutInstant = this._getOption('layoutInstant');
-  var isInstant = layoutInstant !== undefined ?
-    layoutInstant : !this._isLayoutInited;
-  this.layoutItems( this.items, isInstant );
-
-  // flag for initalized
-  this._isLayoutInited = true;
-};
-
-// _init is alias for layout
-proto._init = proto.layout;
-
-/**
- * logic before any new layout
- */
-proto._resetLayout = function() {
-  this.getSize();
-};
-
-
-proto.getSize = function() {
-  this.size = getSize( this.element );
-};
-
-/**
- * get measurement from option, for columnWidth, rowHeight, gutter
- * if option is String -> get element from selector string, & get size of element
- * if option is Element -> get size of element
- * else use option as a number
- *
- * @param {String} measurement
- * @param {String} size - width or height
- * @private
- */
-proto._getMeasurement = function( measurement, size ) {
-  var option = this.options[ measurement ];
-  var elem;
-  if ( !option ) {
-    // default to 0
-    this[ measurement ] = 0;
-  } else {
-    // use option as an element
-    if ( typeof option == 'string' ) {
-      elem = this.element.querySelector( option );
-    } else if ( option instanceof HTMLElement ) {
-      elem = option;
-    }
-    // use size of element, if element
-    this[ measurement ] = elem ? getSize( elem )[ size ] : option;
-  }
-};
-
-/**
- * layout a collection of item elements
- * @api public
- */
-proto.layoutItems = function( items, isInstant ) {
-  items = this._getItemsForLayout( items );
-
-  this._layoutItems( items, isInstant );
-
-  this._postLayout();
-};
-
-/**
- * get the items to be laid out
- * you may want to skip over some items
- * @param {Array} items
- * @returns {Array} items
- */
-proto._getItemsForLayout = function( items ) {
-  return items.filter( function( item ) {
-    return !item.isIgnored;
-  });
-};
-
-/**
- * layout items
- * @param {Array} items
- * @param {Boolean} isInstant
- */
-proto._layoutItems = function( items, isInstant ) {
-  this._emitCompleteOnItems( 'layout', items );
-
-  if ( !items || !items.length ) {
-    // no items, emit event with empty array
-    return;
-  }
-
-  var queue = [];
-
-  items.forEach( function( item ) {
-    // get x/y object from method
-    var position = this._getItemLayoutPosition( item );
-    // enqueue
-    position.item = item;
-    position.isInstant = isInstant || item.isLayoutInstant;
-    queue.push( position );
-  }, this );
-
-  this._processLayoutQueue( queue );
-};
-
-/**
- * get item layout position
- * @param {Outlayer.Item} item
- * @returns {Object} x and y position
- */
-proto._getItemLayoutPosition = function( /* item */ ) {
-  return {
-    x: 0,
-    y: 0
-  };
-};
-
-/**
- * iterate over array and position each item
- * Reason being - separating this logic prevents 'layout invalidation'
- * thx @paul_irish
- * @param {Array} queue
- */
-proto._processLayoutQueue = function( queue ) {
-  this.updateStagger();
-  queue.forEach( function( obj, i ) {
-    this._positionItem( obj.item, obj.x, obj.y, obj.isInstant, i );
-  }, this );
-};
-
-// set stagger from option in milliseconds number
-proto.updateStagger = function() {
-  var stagger = this.options.stagger;
-  if ( stagger === null || stagger === undefined ) {
-    this.stagger = 0;
-    return;
-  }
-  this.stagger = getMilliseconds( stagger );
-  return this.stagger;
-};
-
-/**
- * Sets position of item in DOM
- * @param {Outlayer.Item} item
- * @param {Number} x - horizontal position
- * @param {Number} y - vertical position
- * @param {Boolean} isInstant - disables transitions
- */
-proto._positionItem = function( item, x, y, isInstant, i ) {
-  if ( isInstant ) {
-    // if not transition, just set CSS
-    item.goTo( x, y );
-  } else {
-    item.stagger( i * this.stagger );
-    item.moveTo( x, y );
-  }
-};
-
-/**
- * Any logic you want to do after each layout,
- * i.e. size the container
- */
-proto._postLayout = function() {
-  this.resizeContainer();
-};
-
-proto.resizeContainer = function() {
-  var isResizingContainer = this._getOption('resizeContainer');
-  if ( !isResizingContainer ) {
-    return;
-  }
-  var size = this._getContainerSize();
-  if ( size ) {
-    this._setContainerMeasure( size.width, true );
-    this._setContainerMeasure( size.height, false );
-  }
-};
-
-/**
- * Sets width or height of container if returned
- * @returns {Object} size
- *   @param {Number} width
- *   @param {Number} height
- */
-proto._getContainerSize = noop;
-
-/**
- * @param {Number} measure - size of width or height
- * @param {Boolean} isWidth
- */
-proto._setContainerMeasure = function( measure, isWidth ) {
-  if ( measure === undefined ) {
-    return;
-  }
-
-  var elemSize = this.size;
-  // add padding and border width if border box
-  if ( elemSize.isBorderBox ) {
-    measure += isWidth ? elemSize.paddingLeft + elemSize.paddingRight +
-      elemSize.borderLeftWidth + elemSize.borderRightWidth :
-      elemSize.paddingBottom + elemSize.paddingTop +
-      elemSize.borderTopWidth + elemSize.borderBottomWidth;
-  }
-
-  measure = Math.max( measure, 0 );
-  this.element.style[ isWidth ? 'width' : 'height' ] = measure + 'px';
-};
-
-/**
- * emit eventComplete on a collection of items events
- * @param {String} eventName
- * @param {Array} items - Outlayer.Items
- */
-proto._emitCompleteOnItems = function( eventName, items ) {
-  var _this = this;
-  function onComplete() {
-    _this.dispatchEvent( eventName + 'Complete', null, [ items ] );
-  }
-
-  var count = items.length;
-  if ( !items || !count ) {
-    onComplete();
-    return;
-  }
-
-  var doneCount = 0;
-  function tick() {
-    doneCount++;
-    if ( doneCount == count ) {
-      onComplete();
-    }
-  }
-
-  // bind callback
-  items.forEach( function( item ) {
-    item.once( eventName, tick );
-  });
-};
-
-/**
- * emits events via EvEmitter and jQuery events
- * @param {String} type - name of event
- * @param {Event} event - original event
- * @param {Array} args - extra arguments
- */
-proto.dispatchEvent = function( type, event, args ) {
-  // add original event to arguments
-  var emitArgs = event ? [ event ].concat( args ) : args;
-  this.emitEvent( type, emitArgs );
-
-  if ( jQuery ) {
-    // set this.$element
-    this.$element = this.$element || jQuery( this.element );
-    if ( event ) {
-      // create jQuery event
-      var $event = jQuery.Event( event );
-      $event.type = type;
-      this.$element.trigger( $event, args );
-    } else {
-      // just trigger with type if no event available
-      this.$element.trigger( type, args );
-    }
-  }
-};
-
-// -------------------------- ignore & stamps -------------------------- //
-
-
-/**
- * keep item in collection, but do not lay it out
- * ignored items do not get skipped in layout
- * @param {Element} elem
- */
-proto.ignore = function( elem ) {
-  var item = this.getItem( elem );
-  if ( item ) {
-    item.isIgnored = true;
-  }
-};
-
-/**
- * return item to layout collection
- * @param {Element} elem
- */
-proto.unignore = function( elem ) {
-  var item = this.getItem( elem );
-  if ( item ) {
-    delete item.isIgnored;
-  }
-};
-
-/**
- * adds elements to stamps
- * @param {NodeList, Array, Element, or String} elems
- */
-proto.stamp = function( elems ) {
-  elems = this._find( elems );
-  if ( !elems ) {
-    return;
-  }
-
-  this.stamps = this.stamps.concat( elems );
-  // ignore
-  elems.forEach( this.ignore, this );
-};
-
-/**
- * removes elements to stamps
- * @param {NodeList, Array, or Element} elems
- */
-proto.unstamp = function( elems ) {
-  elems = this._find( elems );
-  if ( !elems ){
-    return;
-  }
-
-  elems.forEach( function( elem ) {
-    // filter out removed stamp elements
-    utils.removeFrom( this.stamps, elem );
-    this.unignore( elem );
-  }, this );
-};
-
-/**
- * finds child elements
- * @param {NodeList, Array, Element, or String} elems
- * @returns {Array} elems
- */
-proto._find = function( elems ) {
-  if ( !elems ) {
-    return;
-  }
-  // if string, use argument as selector string
-  if ( typeof elems == 'string' ) {
-    elems = this.element.querySelectorAll( elems );
-  }
-  elems = utils.makeArray( elems );
-  return elems;
-};
-
-proto._manageStamps = function() {
-  if ( !this.stamps || !this.stamps.length ) {
-    return;
-  }
-
-  this._getBoundingRect();
-
-  this.stamps.forEach( this._manageStamp, this );
-};
-
-// update boundingLeft / Top
-proto._getBoundingRect = function() {
-  // get bounding rect for container element
-  var boundingRect = this.element.getBoundingClientRect();
-  var size = this.size;
-  this._boundingRect = {
-    left: boundingRect.left + size.paddingLeft + size.borderLeftWidth,
-    top: boundingRect.top + size.paddingTop + size.borderTopWidth,
-    right: boundingRect.right - ( size.paddingRight + size.borderRightWidth ),
-    bottom: boundingRect.bottom - ( size.paddingBottom + size.borderBottomWidth )
-  };
-};
-
-/**
- * @param {Element} stamp
-**/
-proto._manageStamp = noop;
-
-/**
- * get x/y position of element relative to container element
- * @param {Element} elem
- * @returns {Object} offset - has left, top, right, bottom
- */
-proto._getElementOffset = function( elem ) {
-  var boundingRect = elem.getBoundingClientRect();
-  var thisRect = this._boundingRect;
-  var size = getSize( elem );
-  var offset = {
-    left: boundingRect.left - thisRect.left - size.marginLeft,
-    top: boundingRect.top - thisRect.top - size.marginTop,
-    right: thisRect.right - boundingRect.right - size.marginRight,
-    bottom: thisRect.bottom - boundingRect.bottom - size.marginBottom
-  };
-  return offset;
-};
-
-// -------------------------- resize -------------------------- //
-
-// enable event handlers for listeners
-// i.e. resize -> onresize
-proto.handleEvent = utils.handleEvent;
-
-/**
- * Bind layout to window resizing
- */
-proto.bindResize = function() {
-  window.addEventListener( 'resize', this );
-  this.isResizeBound = true;
-};
-
-/**
- * Unbind layout to window resizing
- */
-proto.unbindResize = function() {
-  window.removeEventListener( 'resize', this );
-  this.isResizeBound = false;
-};
-
-proto.onresize = function() {
-  this.resize();
-};
-
-utils.debounceMethod( Outlayer, 'onresize', 100 );
-
-proto.resize = function() {
-  // don't trigger if size did not change
-  // or if resize was unbound. See #9
-  if ( !this.isResizeBound || !this.needsResizeLayout() ) {
-    return;
-  }
-
-  this.layout();
-};
-
-/**
- * check if layout is needed post layout
- * @returns Boolean
- */
-proto.needsResizeLayout = function() {
-  var size = getSize( this.element );
-  // check that this.size and size are there
-  // IE8 triggers resize on body size change, so they might not be
-  var hasSizes = this.size && size;
-  return hasSizes && size.innerWidth !== this.size.innerWidth;
-};
-
-// -------------------------- methods -------------------------- //
-
-/**
- * add items to Outlayer instance
- * @param {Array or NodeList or Element} elems
- * @returns {Array} items - Outlayer.Items
-**/
-proto.addItems = function( elems ) {
-  var items = this._itemize( elems );
-  // add items to collection
-  if ( items.length ) {
-    this.items = this.items.concat( items );
-  }
-  return items;
-};
-
-/**
- * Layout newly-appended item elements
- * @param {Array or NodeList or Element} elems
- */
-proto.appended = function( elems ) {
-  var items = this.addItems( elems );
-  if ( !items.length ) {
-    return;
-  }
-  // layout and reveal just the new items
-  this.layoutItems( items, true );
-  this.reveal( items );
-};
-
-/**
- * Layout prepended elements
- * @param {Array or NodeList or Element} elems
- */
-proto.prepended = function( elems ) {
-  var items = this._itemize( elems );
-  if ( !items.length ) {
-    return;
-  }
-  // add items to beginning of collection
-  var previousItems = this.items.slice(0);
-  this.items = items.concat( previousItems );
-  // start new layout
-  this._resetLayout();
-  this._manageStamps();
-  // layout new stuff without transition
-  this.layoutItems( items, true );
-  this.reveal( items );
-  // layout previous items
-  this.layoutItems( previousItems );
-};
-
-/**
- * reveal a collection of items
- * @param {Array of Outlayer.Items} items
- */
-proto.reveal = function( items ) {
-  this._emitCompleteOnItems( 'reveal', items );
-  if ( !items || !items.length ) {
-    return;
-  }
-  var stagger = this.updateStagger();
-  items.forEach( function( item, i ) {
-    item.stagger( i * stagger );
-    item.reveal();
-  });
-};
-
-/**
- * hide a collection of items
- * @param {Array of Outlayer.Items} items
- */
-proto.hide = function( items ) {
-  this._emitCompleteOnItems( 'hide', items );
-  if ( !items || !items.length ) {
-    return;
-  }
-  var stagger = this.updateStagger();
-  items.forEach( function( item, i ) {
-    item.stagger( i * stagger );
-    item.hide();
-  });
-};
-
-/**
- * reveal item elements
- * @param {Array}, {Element}, {NodeList} items
- */
-proto.revealItemElements = function( elems ) {
-  var items = this.getItems( elems );
-  this.reveal( items );
-};
-
-/**
- * hide item elements
- * @param {Array}, {Element}, {NodeList} items
- */
-proto.hideItemElements = function( elems ) {
-  var items = this.getItems( elems );
-  this.hide( items );
-};
-
-/**
- * get Outlayer.Item, given an Element
- * @param {Element} elem
- * @param {Function} callback
- * @returns {Outlayer.Item} item
- */
-proto.getItem = function( elem ) {
-  // loop through items to get the one that matches
-  for ( var i=0; i < this.items.length; i++ ) {
-    var item = this.items[i];
-    if ( item.element == elem ) {
-      // return item
-      return item;
-    }
-  }
-};
-
-/**
- * get collection of Outlayer.Items, given Elements
- * @param {Array} elems
- * @returns {Array} items - Outlayer.Items
- */
-proto.getItems = function( elems ) {
-  elems = utils.makeArray( elems );
-  var items = [];
-  elems.forEach( function( elem ) {
-    var item = this.getItem( elem );
-    if ( item ) {
-      items.push( item );
-    }
-  }, this );
-
-  return items;
-};
-
-/**
- * remove element(s) from instance and DOM
- * @param {Array or NodeList or Element} elems
- */
-proto.remove = function( elems ) {
-  var removeItems = this.getItems( elems );
-
-  this._emitCompleteOnItems( 'remove', removeItems );
-
-  // bail if no items to remove
-  if ( !removeItems || !removeItems.length ) {
-    return;
-  }
-
-  removeItems.forEach( function( item ) {
-    item.remove();
-    // remove item from collection
-    utils.removeFrom( this.items, item );
-  }, this );
-};
-
-// ----- destroy ----- //
-
-// remove and disable Outlayer instance
-proto.destroy = function() {
-  // clean up dynamic styles
-  var style = this.element.style;
-  style.height = '';
-  style.position = '';
-  style.width = '';
-  // destroy items
-  this.items.forEach( function( item ) {
-    item.destroy();
-  });
-
-  this.unbindResize();
-
-  var id = this.element.outlayerGUID;
-  delete instances[ id ]; // remove reference to instance by id
-  delete this.element.outlayerGUID;
-  // remove data for jQuery
-  if ( jQuery ) {
-    jQuery.removeData( this.element, this.constructor.namespace );
-  }
-
-};
-
-// -------------------------- data -------------------------- //
-
-/**
- * get Outlayer instance from element
- * @param {Element} elem
- * @returns {Outlayer}
- */
-Outlayer.data = function( elem ) {
-  elem = utils.getQueryElement( elem );
-  var id = elem && elem.outlayerGUID;
-  return id && instances[ id ];
-};
-
-
-// -------------------------- create Outlayer class -------------------------- //
-
-/**
- * create a layout class
- * @param {String} namespace
- */
-Outlayer.create = function( namespace, options ) {
-  // sub-class Outlayer
-  var Layout = subclass( Outlayer );
-  // apply new options and compatOptions
-  Layout.defaults = utils.extend( {}, Outlayer.defaults );
-  utils.extend( Layout.defaults, options );
-  Layout.compatOptions = utils.extend( {}, Outlayer.compatOptions  );
-
-  Layout.namespace = namespace;
-
-  Layout.data = Outlayer.data;
-
-  // sub-class Item
-  Layout.Item = subclass( Item );
-
-  // -------------------------- declarative -------------------------- //
-
-  utils.htmlInit( Layout, namespace );
-
-  // -------------------------- jQuery bridge -------------------------- //
-
-  // make into jQuery plugin
-  if ( jQuery && jQuery.bridget ) {
-    jQuery.bridget( namespace, Layout );
-  }
-
-  return Layout;
-};
-
-function subclass( Parent ) {
-  function SubClass() {
-    Parent.apply( this, arguments );
-  }
-
-  SubClass.prototype = Object.create( Parent.prototype );
-  SubClass.prototype.constructor = SubClass;
-
-  return SubClass;
-}
-
-// ----- helpers ----- //
-
-// how many milliseconds are in each unit
-var msUnits = {
-  ms: 1,
-  s: 1000
-};
-
-// munge time-like parameter into millisecond number
-// '0.4s' -> 40
-function getMilliseconds( time ) {
-  if ( typeof time == 'number' ) {
-    return time;
-  }
-  var matches = time.match( /(^\d*\.?\d*)(\w*)/ );
-  var num = matches && matches[1];
-  var unit = matches && matches[2];
-  if ( !num.length ) {
-    return 0;
-  }
-  num = parseFloat( num );
-  var mult = msUnits[ unit ] || 1;
-  return num * mult;
-}
-
-// ----- fin ----- //
-
-// back in global
-Outlayer.Item = Item;
-
-return Outlayer;
-
-}));
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
- * matchesSelector v2.0.2
- * matchesSelector( element, '.selector' )
- * MIT license
- */
-
-/*jshint browser: true, strict: true, undef: true, unused: true */
-
-( function( window, factory ) {
-  /*global define: false, module: false */
-  'use strict';
-  // universal module definition
-  if ( true ) {
-    // AMD
-    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
-				__WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory();
-  } else {
-    // browser global
-    window.matchesSelector = factory();
-  }
-
-}( window, function factory() {
-  'use strict';
-
-  var matchesMethod = ( function() {
-    var ElemProto = window.Element.prototype;
-    // check for the standard method name first
-    if ( ElemProto.matches ) {
-      return 'matches';
-    }
-    // check un-prefixed
-    if ( ElemProto.matchesSelector ) {
-      return 'matchesSelector';
-    }
-    // check vendor prefixes
-    var prefixes = [ 'webkit', 'moz', 'ms', 'o' ];
-
-    for ( var i=0; i < prefixes.length; i++ ) {
-      var prefix = prefixes[i];
-      var method = prefix + 'MatchesSelector';
-      if ( ElemProto[ method ] ) {
-        return method;
-      }
-    }
-  })();
-
-  return function matchesSelector( elem, selector ) {
-    return elem[ matchesMethod ]( selector );
-  };
-
-}));
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
- * EvEmitter v1.1.0
- * Lil' event emitter
- * MIT License
- */
-
-/* jshint unused: true, undef: true, strict: true */
-
-( function( global, factory ) {
-  // universal module definition
-  /* jshint strict: false */ /* globals define, module, window */
-  if ( true ) {
-    // AMD - RequireJS
-    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
-				__WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else if ( typeof module == 'object' && module.exports ) {
-    // CommonJS - Browserify, Webpack
-    module.exports = factory();
-  } else {
-    // Browser globals
-    global.EvEmitter = factory();
-  }
-
-}( typeof window != 'undefined' ? window : this, function() {
-
-"use strict";
-
-function EvEmitter() {}
-
-var proto = EvEmitter.prototype;
-
-proto.on = function( eventName, listener ) {
-  if ( !eventName || !listener ) {
-    return;
-  }
-  // set events hash
-  var events = this._events = this._events || {};
-  // set listeners array
-  var listeners = events[ eventName ] = events[ eventName ] || [];
-  // only add once
-  if ( listeners.indexOf( listener ) == -1 ) {
-    listeners.push( listener );
-  }
-
-  return this;
-};
-
-proto.once = function( eventName, listener ) {
-  if ( !eventName || !listener ) {
-    return;
-  }
-  // add event
-  this.on( eventName, listener );
-  // set once flag
-  // set onceEvents hash
-  var onceEvents = this._onceEvents = this._onceEvents || {};
-  // set onceListeners object
-  var onceListeners = onceEvents[ eventName ] = onceEvents[ eventName ] || {};
-  // set flag
-  onceListeners[ listener ] = true;
-
-  return this;
-};
-
-proto.off = function( eventName, listener ) {
-  var listeners = this._events && this._events[ eventName ];
-  if ( !listeners || !listeners.length ) {
-    return;
-  }
-  var index = listeners.indexOf( listener );
-  if ( index != -1 ) {
-    listeners.splice( index, 1 );
-  }
-
-  return this;
-};
-
-proto.emitEvent = function( eventName, args ) {
-  var listeners = this._events && this._events[ eventName ];
-  if ( !listeners || !listeners.length ) {
-    return;
-  }
-  var i = 0;
-  var listener = listeners[i];
-  args = args || [];
-  // once stuff
-  var onceListeners = this._onceEvents && this._onceEvents[ eventName ];
-
-  while ( listener ) {
-    var isOnce = onceListeners && onceListeners[ listener ];
-    if ( isOnce ) {
-      // remove listener
-      // remove before trigger to prevent recursion
-      this.off( eventName, listener );
-      // unset once flag
-      delete onceListeners[ listener ];
-    }
-    // trigger listener
-    listener.apply( this, args );
-    // get next listener
-    i += isOnce ? 0 : 1;
-    listener = listeners[i];
-  }
-
-  return this;
-};
-
-proto.allOff =
-proto.removeAllListeners = function() {
-  delete this._events;
-  delete this._onceEvents;
-};
-
-return EvEmitter;
-
-}));
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
- * Fizzy UI utils v2.0.5
- * MIT license
- */
-
-/*jshint browser: true, undef: true, unused: true, strict: true */
-
-( function( window, factory ) {
-  // universal module definition
-  /*jshint strict: false */ /*globals define, module, require */
-
-  if ( true ) {
-    // AMD
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-      __webpack_require__(3)
-    ], __WEBPACK_AMD_DEFINE_RESULT__ = function( matchesSelector ) {
-      return factory( window, matchesSelector );
-    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory(
-      window,
-      require('desandro-matches-selector')
-    );
-  } else {
-    // browser global
-    window.fizzyUIUtils = factory(
-      window,
-      window.matchesSelector
-    );
-  }
-
-}( window, function factory( window, matchesSelector ) {
-
-'use strict';
-
-var utils = {};
-
-// ----- extend ----- //
-
-// extends objects
-utils.extend = function( a, b ) {
-  for ( var prop in b ) {
-    a[ prop ] = b[ prop ];
-  }
-  return a;
-};
-
-// ----- modulo ----- //
-
-utils.modulo = function( num, div ) {
-  return ( ( num % div ) + div ) % div;
-};
-
-// ----- makeArray ----- //
-
-// turn element or nodeList into an array
-utils.makeArray = function( obj ) {
-  var ary = [];
-  if ( Array.isArray( obj ) ) {
-    // use object if already an array
-    ary = obj;
-  } else if ( obj && typeof obj == 'object' &&
-    typeof obj.length == 'number' ) {
-    // convert nodeList to array
-    for ( var i=0; i < obj.length; i++ ) {
-      ary.push( obj[i] );
-    }
-  } else {
-    // array of single index
-    ary.push( obj );
-  }
-  return ary;
-};
-
-// ----- removeFrom ----- //
-
-utils.removeFrom = function( ary, obj ) {
-  var index = ary.indexOf( obj );
-  if ( index != -1 ) {
-    ary.splice( index, 1 );
-  }
-};
-
-// ----- getParent ----- //
-
-utils.getParent = function( elem, selector ) {
-  while ( elem.parentNode && elem != document.body ) {
-    elem = elem.parentNode;
-    if ( matchesSelector( elem, selector ) ) {
-      return elem;
-    }
-  }
-};
-
-// ----- getQueryElement ----- //
-
-// use element as selector string
-utils.getQueryElement = function( elem ) {
-  if ( typeof elem == 'string' ) {
-    return document.querySelector( elem );
-  }
-  return elem;
-};
-
-// ----- handleEvent ----- //
-
-// enable .ontype to trigger from .addEventListener( elem, 'type' )
-utils.handleEvent = function( event ) {
-  var method = 'on' + event.type;
-  if ( this[ method ] ) {
-    this[ method ]( event );
-  }
-};
-
-// ----- filterFindElements ----- //
-
-utils.filterFindElements = function( elems, selector ) {
-  // make array of elems
-  elems = utils.makeArray( elems );
-  var ffElems = [];
-
-  elems.forEach( function( elem ) {
-    // check that elem is an actual element
-    if ( !( elem instanceof HTMLElement ) ) {
-      return;
-    }
-    // add elem if no selector
-    if ( !selector ) {
-      ffElems.push( elem );
-      return;
-    }
-    // filter & find items if we have a selector
-    // filter
-    if ( matchesSelector( elem, selector ) ) {
-      ffElems.push( elem );
-    }
-    // find children
-    var childElems = elem.querySelectorAll( selector );
-    // concat childElems to filterFound array
-    for ( var i=0; i < childElems.length; i++ ) {
-      ffElems.push( childElems[i] );
-    }
-  });
-
-  return ffElems;
-};
-
-// ----- debounceMethod ----- //
-
-utils.debounceMethod = function( _class, methodName, threshold ) {
-  // original method
-  var method = _class.prototype[ methodName ];
-  var timeoutName = methodName + 'Timeout';
-
-  _class.prototype[ methodName ] = function() {
-    var timeout = this[ timeoutName ];
-    if ( timeout ) {
-      clearTimeout( timeout );
-    }
-    var args = arguments;
-
-    var _this = this;
-    this[ timeoutName ] = setTimeout( function() {
-      method.apply( _this, args );
-      delete _this[ timeoutName ];
-    }, threshold || 100 );
-  };
-};
-
-// ----- docReady ----- //
-
-utils.docReady = function( callback ) {
-  var readyState = document.readyState;
-  if ( readyState == 'complete' || readyState == 'interactive' ) {
-    // do async to allow for other scripts to run. metafizzy/flickity#441
-    setTimeout( callback );
-  } else {
-    document.addEventListener( 'DOMContentLoaded', callback );
-  }
-};
-
-// ----- htmlInit ----- //
-
-// http://jamesroberts.name/blog/2010/02/22/string-functions-for-javascript-trim-to-camel-case-to-dashed-and-to-underscore/
-utils.toDashed = function( str ) {
-  return str.replace( /(.)([A-Z])/g, function( match, $1, $2 ) {
-    return $1 + '-' + $2;
-  }).toLowerCase();
-};
-
-var console = window.console;
-/**
- * allow user to initialize classes via [data-namespace] or .js-namespace class
- * htmlInit( Widget, 'widgetName' )
- * options are parsed from data-namespace-options
- */
-utils.htmlInit = function( WidgetClass, namespace ) {
-  utils.docReady( function() {
-    var dashedNamespace = utils.toDashed( namespace );
-    var dataAttr = 'data-' + dashedNamespace;
-    var dataAttrElems = document.querySelectorAll( '[' + dataAttr + ']' );
-    var jsDashElems = document.querySelectorAll( '.js-' + dashedNamespace );
-    var elems = utils.makeArray( dataAttrElems )
-      .concat( utils.makeArray( jsDashElems ) );
-    var dataOptionsAttr = dataAttr + '-options';
-    var jQuery = window.jQuery;
-
-    elems.forEach( function( elem ) {
-      var attr = elem.getAttribute( dataAttr ) ||
-        elem.getAttribute( dataOptionsAttr );
-      var options;
-      try {
-        options = attr && JSON.parse( attr );
-      } catch ( error ) {
-        // log error, do not initialize
-        if ( console ) {
-          console.error( 'Error parsing ' + dataAttr + ' on ' + elem.className +
-          ': ' + error );
-        }
-        return;
-      }
-      // initialize
-      var instance = new WidgetClass( elem, options );
-      // make available via $().data('namespace')
-      if ( jQuery ) {
-        jQuery.data( elem, namespace, instance );
-      }
-    });
-
-  });
-};
-
-// -----  ----- //
-
-return utils;
-
-}));
-
-
-/***/ }),
-/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -12085,6 +10327,1764 @@ return jQuery;
 
 
 /***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * getSize v2.0.2
+ * measure size of elements
+ * MIT license
+ */
+
+/*jshint browser: true, strict: true, undef: true, unused: true */
+/*global define: false, module: false, console: false */
+
+( function( window, factory ) {
+  'use strict';
+
+  if ( true ) {
+    // AMD
+    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+      return factory();
+    }.call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory();
+  } else {
+    // browser global
+    window.getSize = factory();
+  }
+
+})( window, function factory() {
+'use strict';
+
+// -------------------------- helpers -------------------------- //
+
+// get a number from a string, not a percentage
+function getStyleSize( value ) {
+  var num = parseFloat( value );
+  // not a percent like '100%', and a number
+  var isValid = value.indexOf('%') == -1 && !isNaN( num );
+  return isValid && num;
+}
+
+function noop() {}
+
+var logError = typeof console == 'undefined' ? noop :
+  function( message ) {
+    console.error( message );
+  };
+
+// -------------------------- measurements -------------------------- //
+
+var measurements = [
+  'paddingLeft',
+  'paddingRight',
+  'paddingTop',
+  'paddingBottom',
+  'marginLeft',
+  'marginRight',
+  'marginTop',
+  'marginBottom',
+  'borderLeftWidth',
+  'borderRightWidth',
+  'borderTopWidth',
+  'borderBottomWidth'
+];
+
+var measurementsLength = measurements.length;
+
+function getZeroSize() {
+  var size = {
+    width: 0,
+    height: 0,
+    innerWidth: 0,
+    innerHeight: 0,
+    outerWidth: 0,
+    outerHeight: 0
+  };
+  for ( var i=0; i < measurementsLength; i++ ) {
+    var measurement = measurements[i];
+    size[ measurement ] = 0;
+  }
+  return size;
+}
+
+// -------------------------- getStyle -------------------------- //
+
+/**
+ * getStyle, get style of element, check for Firefox bug
+ * https://bugzilla.mozilla.org/show_bug.cgi?id=548397
+ */
+function getStyle( elem ) {
+  var style = getComputedStyle( elem );
+  if ( !style ) {
+    logError( 'Style returned ' + style +
+      '. Are you running this code in a hidden iframe on Firefox? ' +
+      'See http://bit.ly/getsizebug1' );
+  }
+  return style;
+}
+
+// -------------------------- setup -------------------------- //
+
+var isSetup = false;
+
+var isBoxSizeOuter;
+
+/**
+ * setup
+ * check isBoxSizerOuter
+ * do on first getSize() rather than on page load for Firefox bug
+ */
+function setup() {
+  // setup once
+  if ( isSetup ) {
+    return;
+  }
+  isSetup = true;
+
+  // -------------------------- box sizing -------------------------- //
+
+  /**
+   * WebKit measures the outer-width on style.width on border-box elems
+   * IE & Firefox<29 measures the inner-width
+   */
+  var div = document.createElement('div');
+  div.style.width = '200px';
+  div.style.padding = '1px 2px 3px 4px';
+  div.style.borderStyle = 'solid';
+  div.style.borderWidth = '1px 2px 3px 4px';
+  div.style.boxSizing = 'border-box';
+
+  var body = document.body || document.documentElement;
+  body.appendChild( div );
+  var style = getStyle( div );
+
+  getSize.isBoxSizeOuter = isBoxSizeOuter = getStyleSize( style.width ) == 200;
+  body.removeChild( div );
+
+}
+
+// -------------------------- getSize -------------------------- //
+
+function getSize( elem ) {
+  setup();
+
+  // use querySeletor if elem is string
+  if ( typeof elem == 'string' ) {
+    elem = document.querySelector( elem );
+  }
+
+  // do not proceed on non-objects
+  if ( !elem || typeof elem != 'object' || !elem.nodeType ) {
+    return;
+  }
+
+  var style = getStyle( elem );
+
+  // if hidden, everything is 0
+  if ( style.display == 'none' ) {
+    return getZeroSize();
+  }
+
+  var size = {};
+  size.width = elem.offsetWidth;
+  size.height = elem.offsetHeight;
+
+  var isBorderBox = size.isBorderBox = style.boxSizing == 'border-box';
+
+  // get all measurements
+  for ( var i=0; i < measurementsLength; i++ ) {
+    var measurement = measurements[i];
+    var value = style[ measurement ];
+    var num = parseFloat( value );
+    // any 'auto', 'medium' value will be 0
+    size[ measurement ] = !isNaN( num ) ? num : 0;
+  }
+
+  var paddingWidth = size.paddingLeft + size.paddingRight;
+  var paddingHeight = size.paddingTop + size.paddingBottom;
+  var marginWidth = size.marginLeft + size.marginRight;
+  var marginHeight = size.marginTop + size.marginBottom;
+  var borderWidth = size.borderLeftWidth + size.borderRightWidth;
+  var borderHeight = size.borderTopWidth + size.borderBottomWidth;
+
+  var isBorderBoxSizeOuter = isBorderBox && isBoxSizeOuter;
+
+  // overwrite width and height if we can get it from style
+  var styleWidth = getStyleSize( style.width );
+  if ( styleWidth !== false ) {
+    size.width = styleWidth +
+      // add padding and border unless it's already including it
+      ( isBorderBoxSizeOuter ? 0 : paddingWidth + borderWidth );
+  }
+
+  var styleHeight = getStyleSize( style.height );
+  if ( styleHeight !== false ) {
+    size.height = styleHeight +
+      // add padding and border unless it's already including it
+      ( isBorderBoxSizeOuter ? 0 : paddingHeight + borderHeight );
+  }
+
+  size.innerWidth = size.width - ( paddingWidth + borderWidth );
+  size.innerHeight = size.height - ( paddingHeight + borderHeight );
+
+  size.outerWidth = size.width + marginWidth;
+  size.outerHeight = size.height + marginHeight;
+
+  return size;
+}
+
+return getSize;
+
+});
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+ * Isotope LayoutMode
+ */
+
+( function( window, factory ) {
+  // universal module definition
+  /* jshint strict: false */ /*globals define, module, require */
+  if ( true ) {
+    // AMD
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+        __webpack_require__(1),
+        __webpack_require__(3)
+      ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+      require('get-size'),
+      require('outlayer')
+    );
+  } else {
+    // browser global
+    window.Isotope = window.Isotope || {};
+    window.Isotope.LayoutMode = factory(
+      window.getSize,
+      window.Outlayer
+    );
+  }
+
+}( window, function factory( getSize, Outlayer ) {
+  'use strict';
+
+  // layout mode class
+  function LayoutMode( isotope ) {
+    this.isotope = isotope;
+    // link properties
+    if ( isotope ) {
+      this.options = isotope.options[ this.namespace ];
+      this.element = isotope.element;
+      this.items = isotope.filteredItems;
+      this.size = isotope.size;
+    }
+  }
+
+  var proto = LayoutMode.prototype;
+
+  /**
+   * some methods should just defer to default Outlayer method
+   * and reference the Isotope instance as `this`
+  **/
+  var facadeMethods = [
+    '_resetLayout',
+    '_getItemLayoutPosition',
+    '_manageStamp',
+    '_getContainerSize',
+    '_getElementOffset',
+    'needsResizeLayout',
+    '_getOption'
+  ];
+
+  facadeMethods.forEach( function( methodName ) {
+    proto[ methodName ] = function() {
+      return Outlayer.prototype[ methodName ].apply( this.isotope, arguments );
+    };
+  });
+
+  // -----  ----- //
+
+  // for horizontal layout modes, check vertical size
+  proto.needsVerticalResizeLayout = function() {
+    // don't trigger if size did not change
+    var size = getSize( this.isotope.element );
+    // check that this.size and size are there
+    // IE8 triggers resize on body size change, so they might not be
+    var hasSizes = this.isotope.size && size;
+    return hasSizes && size.innerHeight != this.isotope.size.innerHeight;
+  };
+
+  // ----- measurements ----- //
+
+  proto._getMeasurement = function() {
+    this.isotope._getMeasurement.apply( this, arguments );
+  };
+
+  proto.getColumnWidth = function() {
+    this.getSegmentSize( 'column', 'Width' );
+  };
+
+  proto.getRowHeight = function() {
+    this.getSegmentSize( 'row', 'Height' );
+  };
+
+  /**
+   * get columnWidth or rowHeight
+   * segment: 'column' or 'row'
+   * size 'Width' or 'Height'
+  **/
+  proto.getSegmentSize = function( segment, size ) {
+    var segmentName = segment + size;
+    var outerSize = 'outer' + size;
+    // columnWidth / outerWidth // rowHeight / outerHeight
+    this._getMeasurement( segmentName, outerSize );
+    // got rowHeight or columnWidth, we can chill
+    if ( this[ segmentName ] ) {
+      return;
+    }
+    // fall back to item of first element
+    var firstItemSize = this.getFirstItemSize();
+    this[ segmentName ] = firstItemSize && firstItemSize[ outerSize ] ||
+      // or size of container
+      this.isotope.size[ 'inner' + size ];
+  };
+
+  proto.getFirstItemSize = function() {
+    var firstItem = this.isotope.filteredItems[0];
+    return firstItem && firstItem.element && getSize( firstItem.element );
+  };
+
+  // ----- methods that should reference isotope ----- //
+
+  proto.layout = function() {
+    this.isotope.layout.apply( this.isotope, arguments );
+  };
+
+  proto.getSize = function() {
+    this.isotope.getSize();
+    this.size = this.isotope.size;
+  };
+
+  // -------------------------- create -------------------------- //
+
+  LayoutMode.modes = {};
+
+  LayoutMode.create = function( namespace, options ) {
+
+    function Mode() {
+      LayoutMode.apply( this, arguments );
+    }
+
+    Mode.prototype = Object.create( proto );
+    Mode.prototype.constructor = Mode;
+
+    // default options
+    if ( options ) {
+      Mode.options = options;
+    }
+
+    Mode.prototype.namespace = namespace;
+    // register in Isotope
+    LayoutMode.modes[ namespace ] = Mode;
+
+    return Mode;
+  };
+
+  return LayoutMode;
+
+}));
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * Outlayer v2.1.1
+ * the brains and guts of a layout library
+ * MIT license
+ */
+
+( function( window, factory ) {
+  'use strict';
+  // universal module definition
+  /* jshint strict: false */ /* globals define, module, require */
+  if ( true ) {
+    // AMD - RequireJS
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+        __webpack_require__(5),
+        __webpack_require__(1),
+        __webpack_require__(6),
+        __webpack_require__(19)
+      ], __WEBPACK_AMD_DEFINE_RESULT__ = function( EvEmitter, getSize, utils, Item ) {
+        return factory( window, EvEmitter, getSize, utils, Item);
+      }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS - Browserify, Webpack
+    module.exports = factory(
+      window,
+      require('ev-emitter'),
+      require('get-size'),
+      require('fizzy-ui-utils'),
+      require('./item')
+    );
+  } else {
+    // browser global
+    window.Outlayer = factory(
+      window,
+      window.EvEmitter,
+      window.getSize,
+      window.fizzyUIUtils,
+      window.Outlayer.Item
+    );
+  }
+
+}( window, function factory( window, EvEmitter, getSize, utils, Item ) {
+'use strict';
+
+// ----- vars ----- //
+
+var console = window.console;
+var jQuery = window.jQuery;
+var noop = function() {};
+
+// -------------------------- Outlayer -------------------------- //
+
+// globally unique identifiers
+var GUID = 0;
+// internal store of all Outlayer intances
+var instances = {};
+
+
+/**
+ * @param {Element, String} element
+ * @param {Object} options
+ * @constructor
+ */
+function Outlayer( element, options ) {
+  var queryElement = utils.getQueryElement( element );
+  if ( !queryElement ) {
+    if ( console ) {
+      console.error( 'Bad element for ' + this.constructor.namespace +
+        ': ' + ( queryElement || element ) );
+    }
+    return;
+  }
+  this.element = queryElement;
+  // add jQuery
+  if ( jQuery ) {
+    this.$element = jQuery( this.element );
+  }
+
+  // options
+  this.options = utils.extend( {}, this.constructor.defaults );
+  this.option( options );
+
+  // add id for Outlayer.getFromElement
+  var id = ++GUID;
+  this.element.outlayerGUID = id; // expando
+  instances[ id ] = this; // associate via id
+
+  // kick it off
+  this._create();
+
+  var isInitLayout = this._getOption('initLayout');
+  if ( isInitLayout ) {
+    this.layout();
+  }
+}
+
+// settings are for internal use only
+Outlayer.namespace = 'outlayer';
+Outlayer.Item = Item;
+
+// default options
+Outlayer.defaults = {
+  containerStyle: {
+    position: 'relative'
+  },
+  initLayout: true,
+  originLeft: true,
+  originTop: true,
+  resize: true,
+  resizeContainer: true,
+  // item options
+  transitionDuration: '0.4s',
+  hiddenStyle: {
+    opacity: 0,
+    transform: 'scale(0.001)'
+  },
+  visibleStyle: {
+    opacity: 1,
+    transform: 'scale(1)'
+  }
+};
+
+var proto = Outlayer.prototype;
+// inherit EvEmitter
+utils.extend( proto, EvEmitter.prototype );
+
+/**
+ * set options
+ * @param {Object} opts
+ */
+proto.option = function( opts ) {
+  utils.extend( this.options, opts );
+};
+
+/**
+ * get backwards compatible option value, check old name
+ */
+proto._getOption = function( option ) {
+  var oldOption = this.constructor.compatOptions[ option ];
+  return oldOption && this.options[ oldOption ] !== undefined ?
+    this.options[ oldOption ] : this.options[ option ];
+};
+
+Outlayer.compatOptions = {
+  // currentName: oldName
+  initLayout: 'isInitLayout',
+  horizontal: 'isHorizontal',
+  layoutInstant: 'isLayoutInstant',
+  originLeft: 'isOriginLeft',
+  originTop: 'isOriginTop',
+  resize: 'isResizeBound',
+  resizeContainer: 'isResizingContainer'
+};
+
+proto._create = function() {
+  // get items from children
+  this.reloadItems();
+  // elements that affect layout, but are not laid out
+  this.stamps = [];
+  this.stamp( this.options.stamp );
+  // set container style
+  utils.extend( this.element.style, this.options.containerStyle );
+
+  // bind resize method
+  var canBindResize = this._getOption('resize');
+  if ( canBindResize ) {
+    this.bindResize();
+  }
+};
+
+// goes through all children again and gets bricks in proper order
+proto.reloadItems = function() {
+  // collection of item elements
+  this.items = this._itemize( this.element.children );
+};
+
+
+/**
+ * turn elements into Outlayer.Items to be used in layout
+ * @param {Array or NodeList or HTMLElement} elems
+ * @returns {Array} items - collection of new Outlayer Items
+ */
+proto._itemize = function( elems ) {
+
+  var itemElems = this._filterFindItemElements( elems );
+  var Item = this.constructor.Item;
+
+  // create new Outlayer Items for collection
+  var items = [];
+  for ( var i=0; i < itemElems.length; i++ ) {
+    var elem = itemElems[i];
+    var item = new Item( elem, this );
+    items.push( item );
+  }
+
+  return items;
+};
+
+/**
+ * get item elements to be used in layout
+ * @param {Array or NodeList or HTMLElement} elems
+ * @returns {Array} items - item elements
+ */
+proto._filterFindItemElements = function( elems ) {
+  return utils.filterFindElements( elems, this.options.itemSelector );
+};
+
+/**
+ * getter method for getting item elements
+ * @returns {Array} elems - collection of item elements
+ */
+proto.getItemElements = function() {
+  return this.items.map( function( item ) {
+    return item.element;
+  });
+};
+
+// ----- init & layout ----- //
+
+/**
+ * lays out all items
+ */
+proto.layout = function() {
+  this._resetLayout();
+  this._manageStamps();
+
+  // don't animate first layout
+  var layoutInstant = this._getOption('layoutInstant');
+  var isInstant = layoutInstant !== undefined ?
+    layoutInstant : !this._isLayoutInited;
+  this.layoutItems( this.items, isInstant );
+
+  // flag for initalized
+  this._isLayoutInited = true;
+};
+
+// _init is alias for layout
+proto._init = proto.layout;
+
+/**
+ * logic before any new layout
+ */
+proto._resetLayout = function() {
+  this.getSize();
+};
+
+
+proto.getSize = function() {
+  this.size = getSize( this.element );
+};
+
+/**
+ * get measurement from option, for columnWidth, rowHeight, gutter
+ * if option is String -> get element from selector string, & get size of element
+ * if option is Element -> get size of element
+ * else use option as a number
+ *
+ * @param {String} measurement
+ * @param {String} size - width or height
+ * @private
+ */
+proto._getMeasurement = function( measurement, size ) {
+  var option = this.options[ measurement ];
+  var elem;
+  if ( !option ) {
+    // default to 0
+    this[ measurement ] = 0;
+  } else {
+    // use option as an element
+    if ( typeof option == 'string' ) {
+      elem = this.element.querySelector( option );
+    } else if ( option instanceof HTMLElement ) {
+      elem = option;
+    }
+    // use size of element, if element
+    this[ measurement ] = elem ? getSize( elem )[ size ] : option;
+  }
+};
+
+/**
+ * layout a collection of item elements
+ * @api public
+ */
+proto.layoutItems = function( items, isInstant ) {
+  items = this._getItemsForLayout( items );
+
+  this._layoutItems( items, isInstant );
+
+  this._postLayout();
+};
+
+/**
+ * get the items to be laid out
+ * you may want to skip over some items
+ * @param {Array} items
+ * @returns {Array} items
+ */
+proto._getItemsForLayout = function( items ) {
+  return items.filter( function( item ) {
+    return !item.isIgnored;
+  });
+};
+
+/**
+ * layout items
+ * @param {Array} items
+ * @param {Boolean} isInstant
+ */
+proto._layoutItems = function( items, isInstant ) {
+  this._emitCompleteOnItems( 'layout', items );
+
+  if ( !items || !items.length ) {
+    // no items, emit event with empty array
+    return;
+  }
+
+  var queue = [];
+
+  items.forEach( function( item ) {
+    // get x/y object from method
+    var position = this._getItemLayoutPosition( item );
+    // enqueue
+    position.item = item;
+    position.isInstant = isInstant || item.isLayoutInstant;
+    queue.push( position );
+  }, this );
+
+  this._processLayoutQueue( queue );
+};
+
+/**
+ * get item layout position
+ * @param {Outlayer.Item} item
+ * @returns {Object} x and y position
+ */
+proto._getItemLayoutPosition = function( /* item */ ) {
+  return {
+    x: 0,
+    y: 0
+  };
+};
+
+/**
+ * iterate over array and position each item
+ * Reason being - separating this logic prevents 'layout invalidation'
+ * thx @paul_irish
+ * @param {Array} queue
+ */
+proto._processLayoutQueue = function( queue ) {
+  this.updateStagger();
+  queue.forEach( function( obj, i ) {
+    this._positionItem( obj.item, obj.x, obj.y, obj.isInstant, i );
+  }, this );
+};
+
+// set stagger from option in milliseconds number
+proto.updateStagger = function() {
+  var stagger = this.options.stagger;
+  if ( stagger === null || stagger === undefined ) {
+    this.stagger = 0;
+    return;
+  }
+  this.stagger = getMilliseconds( stagger );
+  return this.stagger;
+};
+
+/**
+ * Sets position of item in DOM
+ * @param {Outlayer.Item} item
+ * @param {Number} x - horizontal position
+ * @param {Number} y - vertical position
+ * @param {Boolean} isInstant - disables transitions
+ */
+proto._positionItem = function( item, x, y, isInstant, i ) {
+  if ( isInstant ) {
+    // if not transition, just set CSS
+    item.goTo( x, y );
+  } else {
+    item.stagger( i * this.stagger );
+    item.moveTo( x, y );
+  }
+};
+
+/**
+ * Any logic you want to do after each layout,
+ * i.e. size the container
+ */
+proto._postLayout = function() {
+  this.resizeContainer();
+};
+
+proto.resizeContainer = function() {
+  var isResizingContainer = this._getOption('resizeContainer');
+  if ( !isResizingContainer ) {
+    return;
+  }
+  var size = this._getContainerSize();
+  if ( size ) {
+    this._setContainerMeasure( size.width, true );
+    this._setContainerMeasure( size.height, false );
+  }
+};
+
+/**
+ * Sets width or height of container if returned
+ * @returns {Object} size
+ *   @param {Number} width
+ *   @param {Number} height
+ */
+proto._getContainerSize = noop;
+
+/**
+ * @param {Number} measure - size of width or height
+ * @param {Boolean} isWidth
+ */
+proto._setContainerMeasure = function( measure, isWidth ) {
+  if ( measure === undefined ) {
+    return;
+  }
+
+  var elemSize = this.size;
+  // add padding and border width if border box
+  if ( elemSize.isBorderBox ) {
+    measure += isWidth ? elemSize.paddingLeft + elemSize.paddingRight +
+      elemSize.borderLeftWidth + elemSize.borderRightWidth :
+      elemSize.paddingBottom + elemSize.paddingTop +
+      elemSize.borderTopWidth + elemSize.borderBottomWidth;
+  }
+
+  measure = Math.max( measure, 0 );
+  this.element.style[ isWidth ? 'width' : 'height' ] = measure + 'px';
+};
+
+/**
+ * emit eventComplete on a collection of items events
+ * @param {String} eventName
+ * @param {Array} items - Outlayer.Items
+ */
+proto._emitCompleteOnItems = function( eventName, items ) {
+  var _this = this;
+  function onComplete() {
+    _this.dispatchEvent( eventName + 'Complete', null, [ items ] );
+  }
+
+  var count = items.length;
+  if ( !items || !count ) {
+    onComplete();
+    return;
+  }
+
+  var doneCount = 0;
+  function tick() {
+    doneCount++;
+    if ( doneCount == count ) {
+      onComplete();
+    }
+  }
+
+  // bind callback
+  items.forEach( function( item ) {
+    item.once( eventName, tick );
+  });
+};
+
+/**
+ * emits events via EvEmitter and jQuery events
+ * @param {String} type - name of event
+ * @param {Event} event - original event
+ * @param {Array} args - extra arguments
+ */
+proto.dispatchEvent = function( type, event, args ) {
+  // add original event to arguments
+  var emitArgs = event ? [ event ].concat( args ) : args;
+  this.emitEvent( type, emitArgs );
+
+  if ( jQuery ) {
+    // set this.$element
+    this.$element = this.$element || jQuery( this.element );
+    if ( event ) {
+      // create jQuery event
+      var $event = jQuery.Event( event );
+      $event.type = type;
+      this.$element.trigger( $event, args );
+    } else {
+      // just trigger with type if no event available
+      this.$element.trigger( type, args );
+    }
+  }
+};
+
+// -------------------------- ignore & stamps -------------------------- //
+
+
+/**
+ * keep item in collection, but do not lay it out
+ * ignored items do not get skipped in layout
+ * @param {Element} elem
+ */
+proto.ignore = function( elem ) {
+  var item = this.getItem( elem );
+  if ( item ) {
+    item.isIgnored = true;
+  }
+};
+
+/**
+ * return item to layout collection
+ * @param {Element} elem
+ */
+proto.unignore = function( elem ) {
+  var item = this.getItem( elem );
+  if ( item ) {
+    delete item.isIgnored;
+  }
+};
+
+/**
+ * adds elements to stamps
+ * @param {NodeList, Array, Element, or String} elems
+ */
+proto.stamp = function( elems ) {
+  elems = this._find( elems );
+  if ( !elems ) {
+    return;
+  }
+
+  this.stamps = this.stamps.concat( elems );
+  // ignore
+  elems.forEach( this.ignore, this );
+};
+
+/**
+ * removes elements to stamps
+ * @param {NodeList, Array, or Element} elems
+ */
+proto.unstamp = function( elems ) {
+  elems = this._find( elems );
+  if ( !elems ){
+    return;
+  }
+
+  elems.forEach( function( elem ) {
+    // filter out removed stamp elements
+    utils.removeFrom( this.stamps, elem );
+    this.unignore( elem );
+  }, this );
+};
+
+/**
+ * finds child elements
+ * @param {NodeList, Array, Element, or String} elems
+ * @returns {Array} elems
+ */
+proto._find = function( elems ) {
+  if ( !elems ) {
+    return;
+  }
+  // if string, use argument as selector string
+  if ( typeof elems == 'string' ) {
+    elems = this.element.querySelectorAll( elems );
+  }
+  elems = utils.makeArray( elems );
+  return elems;
+};
+
+proto._manageStamps = function() {
+  if ( !this.stamps || !this.stamps.length ) {
+    return;
+  }
+
+  this._getBoundingRect();
+
+  this.stamps.forEach( this._manageStamp, this );
+};
+
+// update boundingLeft / Top
+proto._getBoundingRect = function() {
+  // get bounding rect for container element
+  var boundingRect = this.element.getBoundingClientRect();
+  var size = this.size;
+  this._boundingRect = {
+    left: boundingRect.left + size.paddingLeft + size.borderLeftWidth,
+    top: boundingRect.top + size.paddingTop + size.borderTopWidth,
+    right: boundingRect.right - ( size.paddingRight + size.borderRightWidth ),
+    bottom: boundingRect.bottom - ( size.paddingBottom + size.borderBottomWidth )
+  };
+};
+
+/**
+ * @param {Element} stamp
+**/
+proto._manageStamp = noop;
+
+/**
+ * get x/y position of element relative to container element
+ * @param {Element} elem
+ * @returns {Object} offset - has left, top, right, bottom
+ */
+proto._getElementOffset = function( elem ) {
+  var boundingRect = elem.getBoundingClientRect();
+  var thisRect = this._boundingRect;
+  var size = getSize( elem );
+  var offset = {
+    left: boundingRect.left - thisRect.left - size.marginLeft,
+    top: boundingRect.top - thisRect.top - size.marginTop,
+    right: thisRect.right - boundingRect.right - size.marginRight,
+    bottom: thisRect.bottom - boundingRect.bottom - size.marginBottom
+  };
+  return offset;
+};
+
+// -------------------------- resize -------------------------- //
+
+// enable event handlers for listeners
+// i.e. resize -> onresize
+proto.handleEvent = utils.handleEvent;
+
+/**
+ * Bind layout to window resizing
+ */
+proto.bindResize = function() {
+  window.addEventListener( 'resize', this );
+  this.isResizeBound = true;
+};
+
+/**
+ * Unbind layout to window resizing
+ */
+proto.unbindResize = function() {
+  window.removeEventListener( 'resize', this );
+  this.isResizeBound = false;
+};
+
+proto.onresize = function() {
+  this.resize();
+};
+
+utils.debounceMethod( Outlayer, 'onresize', 100 );
+
+proto.resize = function() {
+  // don't trigger if size did not change
+  // or if resize was unbound. See #9
+  if ( !this.isResizeBound || !this.needsResizeLayout() ) {
+    return;
+  }
+
+  this.layout();
+};
+
+/**
+ * check if layout is needed post layout
+ * @returns Boolean
+ */
+proto.needsResizeLayout = function() {
+  var size = getSize( this.element );
+  // check that this.size and size are there
+  // IE8 triggers resize on body size change, so they might not be
+  var hasSizes = this.size && size;
+  return hasSizes && size.innerWidth !== this.size.innerWidth;
+};
+
+// -------------------------- methods -------------------------- //
+
+/**
+ * add items to Outlayer instance
+ * @param {Array or NodeList or Element} elems
+ * @returns {Array} items - Outlayer.Items
+**/
+proto.addItems = function( elems ) {
+  var items = this._itemize( elems );
+  // add items to collection
+  if ( items.length ) {
+    this.items = this.items.concat( items );
+  }
+  return items;
+};
+
+/**
+ * Layout newly-appended item elements
+ * @param {Array or NodeList or Element} elems
+ */
+proto.appended = function( elems ) {
+  var items = this.addItems( elems );
+  if ( !items.length ) {
+    return;
+  }
+  // layout and reveal just the new items
+  this.layoutItems( items, true );
+  this.reveal( items );
+};
+
+/**
+ * Layout prepended elements
+ * @param {Array or NodeList or Element} elems
+ */
+proto.prepended = function( elems ) {
+  var items = this._itemize( elems );
+  if ( !items.length ) {
+    return;
+  }
+  // add items to beginning of collection
+  var previousItems = this.items.slice(0);
+  this.items = items.concat( previousItems );
+  // start new layout
+  this._resetLayout();
+  this._manageStamps();
+  // layout new stuff without transition
+  this.layoutItems( items, true );
+  this.reveal( items );
+  // layout previous items
+  this.layoutItems( previousItems );
+};
+
+/**
+ * reveal a collection of items
+ * @param {Array of Outlayer.Items} items
+ */
+proto.reveal = function( items ) {
+  this._emitCompleteOnItems( 'reveal', items );
+  if ( !items || !items.length ) {
+    return;
+  }
+  var stagger = this.updateStagger();
+  items.forEach( function( item, i ) {
+    item.stagger( i * stagger );
+    item.reveal();
+  });
+};
+
+/**
+ * hide a collection of items
+ * @param {Array of Outlayer.Items} items
+ */
+proto.hide = function( items ) {
+  this._emitCompleteOnItems( 'hide', items );
+  if ( !items || !items.length ) {
+    return;
+  }
+  var stagger = this.updateStagger();
+  items.forEach( function( item, i ) {
+    item.stagger( i * stagger );
+    item.hide();
+  });
+};
+
+/**
+ * reveal item elements
+ * @param {Array}, {Element}, {NodeList} items
+ */
+proto.revealItemElements = function( elems ) {
+  var items = this.getItems( elems );
+  this.reveal( items );
+};
+
+/**
+ * hide item elements
+ * @param {Array}, {Element}, {NodeList} items
+ */
+proto.hideItemElements = function( elems ) {
+  var items = this.getItems( elems );
+  this.hide( items );
+};
+
+/**
+ * get Outlayer.Item, given an Element
+ * @param {Element} elem
+ * @param {Function} callback
+ * @returns {Outlayer.Item} item
+ */
+proto.getItem = function( elem ) {
+  // loop through items to get the one that matches
+  for ( var i=0; i < this.items.length; i++ ) {
+    var item = this.items[i];
+    if ( item.element == elem ) {
+      // return item
+      return item;
+    }
+  }
+};
+
+/**
+ * get collection of Outlayer.Items, given Elements
+ * @param {Array} elems
+ * @returns {Array} items - Outlayer.Items
+ */
+proto.getItems = function( elems ) {
+  elems = utils.makeArray( elems );
+  var items = [];
+  elems.forEach( function( elem ) {
+    var item = this.getItem( elem );
+    if ( item ) {
+      items.push( item );
+    }
+  }, this );
+
+  return items;
+};
+
+/**
+ * remove element(s) from instance and DOM
+ * @param {Array or NodeList or Element} elems
+ */
+proto.remove = function( elems ) {
+  var removeItems = this.getItems( elems );
+
+  this._emitCompleteOnItems( 'remove', removeItems );
+
+  // bail if no items to remove
+  if ( !removeItems || !removeItems.length ) {
+    return;
+  }
+
+  removeItems.forEach( function( item ) {
+    item.remove();
+    // remove item from collection
+    utils.removeFrom( this.items, item );
+  }, this );
+};
+
+// ----- destroy ----- //
+
+// remove and disable Outlayer instance
+proto.destroy = function() {
+  // clean up dynamic styles
+  var style = this.element.style;
+  style.height = '';
+  style.position = '';
+  style.width = '';
+  // destroy items
+  this.items.forEach( function( item ) {
+    item.destroy();
+  });
+
+  this.unbindResize();
+
+  var id = this.element.outlayerGUID;
+  delete instances[ id ]; // remove reference to instance by id
+  delete this.element.outlayerGUID;
+  // remove data for jQuery
+  if ( jQuery ) {
+    jQuery.removeData( this.element, this.constructor.namespace );
+  }
+
+};
+
+// -------------------------- data -------------------------- //
+
+/**
+ * get Outlayer instance from element
+ * @param {Element} elem
+ * @returns {Outlayer}
+ */
+Outlayer.data = function( elem ) {
+  elem = utils.getQueryElement( elem );
+  var id = elem && elem.outlayerGUID;
+  return id && instances[ id ];
+};
+
+
+// -------------------------- create Outlayer class -------------------------- //
+
+/**
+ * create a layout class
+ * @param {String} namespace
+ */
+Outlayer.create = function( namespace, options ) {
+  // sub-class Outlayer
+  var Layout = subclass( Outlayer );
+  // apply new options and compatOptions
+  Layout.defaults = utils.extend( {}, Outlayer.defaults );
+  utils.extend( Layout.defaults, options );
+  Layout.compatOptions = utils.extend( {}, Outlayer.compatOptions  );
+
+  Layout.namespace = namespace;
+
+  Layout.data = Outlayer.data;
+
+  // sub-class Item
+  Layout.Item = subclass( Item );
+
+  // -------------------------- declarative -------------------------- //
+
+  utils.htmlInit( Layout, namespace );
+
+  // -------------------------- jQuery bridge -------------------------- //
+
+  // make into jQuery plugin
+  if ( jQuery && jQuery.bridget ) {
+    jQuery.bridget( namespace, Layout );
+  }
+
+  return Layout;
+};
+
+function subclass( Parent ) {
+  function SubClass() {
+    Parent.apply( this, arguments );
+  }
+
+  SubClass.prototype = Object.create( Parent.prototype );
+  SubClass.prototype.constructor = SubClass;
+
+  return SubClass;
+}
+
+// ----- helpers ----- //
+
+// how many milliseconds are in each unit
+var msUnits = {
+  ms: 1,
+  s: 1000
+};
+
+// munge time-like parameter into millisecond number
+// '0.4s' -> 40
+function getMilliseconds( time ) {
+  if ( typeof time == 'number' ) {
+    return time;
+  }
+  var matches = time.match( /(^\d*\.?\d*)(\w*)/ );
+  var num = matches && matches[1];
+  var unit = matches && matches[2];
+  if ( !num.length ) {
+    return 0;
+  }
+  num = parseFloat( num );
+  var mult = msUnits[ unit ] || 1;
+  return num * mult;
+}
+
+// ----- fin ----- //
+
+// back in global
+Outlayer.Item = Item;
+
+return Outlayer;
+
+}));
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+ * matchesSelector v2.0.2
+ * matchesSelector( element, '.selector' )
+ * MIT license
+ */
+
+/*jshint browser: true, strict: true, undef: true, unused: true */
+
+( function( window, factory ) {
+  /*global define: false, module: false */
+  'use strict';
+  // universal module definition
+  if ( true ) {
+    // AMD
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory();
+  } else {
+    // browser global
+    window.matchesSelector = factory();
+  }
+
+}( window, function factory() {
+  'use strict';
+
+  var matchesMethod = ( function() {
+    var ElemProto = window.Element.prototype;
+    // check for the standard method name first
+    if ( ElemProto.matches ) {
+      return 'matches';
+    }
+    // check un-prefixed
+    if ( ElemProto.matchesSelector ) {
+      return 'matchesSelector';
+    }
+    // check vendor prefixes
+    var prefixes = [ 'webkit', 'moz', 'ms', 'o' ];
+
+    for ( var i=0; i < prefixes.length; i++ ) {
+      var prefix = prefixes[i];
+      var method = prefix + 'MatchesSelector';
+      if ( ElemProto[ method ] ) {
+        return method;
+      }
+    }
+  })();
+
+  return function matchesSelector( elem, selector ) {
+    return elem[ matchesMethod ]( selector );
+  };
+
+}));
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+ * EvEmitter v1.1.0
+ * Lil' event emitter
+ * MIT License
+ */
+
+/* jshint unused: true, undef: true, strict: true */
+
+( function( global, factory ) {
+  // universal module definition
+  /* jshint strict: false */ /* globals define, module, window */
+  if ( true ) {
+    // AMD - RequireJS
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS - Browserify, Webpack
+    module.exports = factory();
+  } else {
+    // Browser globals
+    global.EvEmitter = factory();
+  }
+
+}( typeof window != 'undefined' ? window : this, function() {
+
+"use strict";
+
+function EvEmitter() {}
+
+var proto = EvEmitter.prototype;
+
+proto.on = function( eventName, listener ) {
+  if ( !eventName || !listener ) {
+    return;
+  }
+  // set events hash
+  var events = this._events = this._events || {};
+  // set listeners array
+  var listeners = events[ eventName ] = events[ eventName ] || [];
+  // only add once
+  if ( listeners.indexOf( listener ) == -1 ) {
+    listeners.push( listener );
+  }
+
+  return this;
+};
+
+proto.once = function( eventName, listener ) {
+  if ( !eventName || !listener ) {
+    return;
+  }
+  // add event
+  this.on( eventName, listener );
+  // set once flag
+  // set onceEvents hash
+  var onceEvents = this._onceEvents = this._onceEvents || {};
+  // set onceListeners object
+  var onceListeners = onceEvents[ eventName ] = onceEvents[ eventName ] || {};
+  // set flag
+  onceListeners[ listener ] = true;
+
+  return this;
+};
+
+proto.off = function( eventName, listener ) {
+  var listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) {
+    return;
+  }
+  var index = listeners.indexOf( listener );
+  if ( index != -1 ) {
+    listeners.splice( index, 1 );
+  }
+
+  return this;
+};
+
+proto.emitEvent = function( eventName, args ) {
+  var listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) {
+    return;
+  }
+  var i = 0;
+  var listener = listeners[i];
+  args = args || [];
+  // once stuff
+  var onceListeners = this._onceEvents && this._onceEvents[ eventName ];
+
+  while ( listener ) {
+    var isOnce = onceListeners && onceListeners[ listener ];
+    if ( isOnce ) {
+      // remove listener
+      // remove before trigger to prevent recursion
+      this.off( eventName, listener );
+      // unset once flag
+      delete onceListeners[ listener ];
+    }
+    // trigger listener
+    listener.apply( this, args );
+    // get next listener
+    i += isOnce ? 0 : 1;
+    listener = listeners[i];
+  }
+
+  return this;
+};
+
+proto.allOff =
+proto.removeAllListeners = function() {
+  delete this._events;
+  delete this._onceEvents;
+};
+
+return EvEmitter;
+
+}));
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+ * Fizzy UI utils v2.0.5
+ * MIT license
+ */
+
+/*jshint browser: true, undef: true, unused: true, strict: true */
+
+( function( window, factory ) {
+  // universal module definition
+  /*jshint strict: false */ /*globals define, module, require */
+
+  if ( true ) {
+    // AMD
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+      __webpack_require__(4)
+    ], __WEBPACK_AMD_DEFINE_RESULT__ = function( matchesSelector ) {
+      return factory( window, matchesSelector );
+    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+      window,
+      require('desandro-matches-selector')
+    );
+  } else {
+    // browser global
+    window.fizzyUIUtils = factory(
+      window,
+      window.matchesSelector
+    );
+  }
+
+}( window, function factory( window, matchesSelector ) {
+
+'use strict';
+
+var utils = {};
+
+// ----- extend ----- //
+
+// extends objects
+utils.extend = function( a, b ) {
+  for ( var prop in b ) {
+    a[ prop ] = b[ prop ];
+  }
+  return a;
+};
+
+// ----- modulo ----- //
+
+utils.modulo = function( num, div ) {
+  return ( ( num % div ) + div ) % div;
+};
+
+// ----- makeArray ----- //
+
+// turn element or nodeList into an array
+utils.makeArray = function( obj ) {
+  var ary = [];
+  if ( Array.isArray( obj ) ) {
+    // use object if already an array
+    ary = obj;
+  } else if ( obj && typeof obj == 'object' &&
+    typeof obj.length == 'number' ) {
+    // convert nodeList to array
+    for ( var i=0; i < obj.length; i++ ) {
+      ary.push( obj[i] );
+    }
+  } else {
+    // array of single index
+    ary.push( obj );
+  }
+  return ary;
+};
+
+// ----- removeFrom ----- //
+
+utils.removeFrom = function( ary, obj ) {
+  var index = ary.indexOf( obj );
+  if ( index != -1 ) {
+    ary.splice( index, 1 );
+  }
+};
+
+// ----- getParent ----- //
+
+utils.getParent = function( elem, selector ) {
+  while ( elem.parentNode && elem != document.body ) {
+    elem = elem.parentNode;
+    if ( matchesSelector( elem, selector ) ) {
+      return elem;
+    }
+  }
+};
+
+// ----- getQueryElement ----- //
+
+// use element as selector string
+utils.getQueryElement = function( elem ) {
+  if ( typeof elem == 'string' ) {
+    return document.querySelector( elem );
+  }
+  return elem;
+};
+
+// ----- handleEvent ----- //
+
+// enable .ontype to trigger from .addEventListener( elem, 'type' )
+utils.handleEvent = function( event ) {
+  var method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+// ----- filterFindElements ----- //
+
+utils.filterFindElements = function( elems, selector ) {
+  // make array of elems
+  elems = utils.makeArray( elems );
+  var ffElems = [];
+
+  elems.forEach( function( elem ) {
+    // check that elem is an actual element
+    if ( !( elem instanceof HTMLElement ) ) {
+      return;
+    }
+    // add elem if no selector
+    if ( !selector ) {
+      ffElems.push( elem );
+      return;
+    }
+    // filter & find items if we have a selector
+    // filter
+    if ( matchesSelector( elem, selector ) ) {
+      ffElems.push( elem );
+    }
+    // find children
+    var childElems = elem.querySelectorAll( selector );
+    // concat childElems to filterFound array
+    for ( var i=0; i < childElems.length; i++ ) {
+      ffElems.push( childElems[i] );
+    }
+  });
+
+  return ffElems;
+};
+
+// ----- debounceMethod ----- //
+
+utils.debounceMethod = function( _class, methodName, threshold ) {
+  // original method
+  var method = _class.prototype[ methodName ];
+  var timeoutName = methodName + 'Timeout';
+
+  _class.prototype[ methodName ] = function() {
+    var timeout = this[ timeoutName ];
+    if ( timeout ) {
+      clearTimeout( timeout );
+    }
+    var args = arguments;
+
+    var _this = this;
+    this[ timeoutName ] = setTimeout( function() {
+      method.apply( _this, args );
+      delete _this[ timeoutName ];
+    }, threshold || 100 );
+  };
+};
+
+// ----- docReady ----- //
+
+utils.docReady = function( callback ) {
+  var readyState = document.readyState;
+  if ( readyState == 'complete' || readyState == 'interactive' ) {
+    // do async to allow for other scripts to run. metafizzy/flickity#441
+    setTimeout( callback );
+  } else {
+    document.addEventListener( 'DOMContentLoaded', callback );
+  }
+};
+
+// ----- htmlInit ----- //
+
+// http://jamesroberts.name/blog/2010/02/22/string-functions-for-javascript-trim-to-camel-case-to-dashed-and-to-underscore/
+utils.toDashed = function( str ) {
+  return str.replace( /(.)([A-Z])/g, function( match, $1, $2 ) {
+    return $1 + '-' + $2;
+  }).toLowerCase();
+};
+
+var console = window.console;
+/**
+ * allow user to initialize classes via [data-namespace] or .js-namespace class
+ * htmlInit( Widget, 'widgetName' )
+ * options are parsed from data-namespace-options
+ */
+utils.htmlInit = function( WidgetClass, namespace ) {
+  utils.docReady( function() {
+    var dashedNamespace = utils.toDashed( namespace );
+    var dataAttr = 'data-' + dashedNamespace;
+    var dataAttrElems = document.querySelectorAll( '[' + dataAttr + ']' );
+    var jsDashElems = document.querySelectorAll( '.js-' + dashedNamespace );
+    var elems = utils.makeArray( dataAttrElems )
+      .concat( utils.makeArray( jsDashElems ) );
+    var dataOptionsAttr = dataAttr + '-options';
+    var jQuery = window.jQuery;
+
+    elems.forEach( function( elem ) {
+      var attr = elem.getAttribute( dataAttr ) ||
+        elem.getAttribute( dataOptionsAttr );
+      var options;
+      try {
+        options = attr && JSON.parse( attr );
+      } catch ( error ) {
+        // log error, do not initialize
+        if ( console ) {
+          console.error( 'Error parsing ' + dataAttr + ' on ' + elem.className +
+          ': ' + error );
+        }
+        return;
+      }
+      // initialize
+      var instance = new WidgetClass( elem, options );
+      // make available via $().data('namespace')
+      if ( jQuery ) {
+        jQuery.data( elem, namespace, instance );
+      }
+    });
+
+  });
+};
+
+// -----  ----- //
+
+return utils;
+
+}));
+
+
+/***/ }),
 /* 7 */,
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -12098,7 +12098,138 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _jquery = __webpack_require__(6);
+var _jquery = __webpack_require__(0);
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ChartsModule = function () {
+  function ChartsModule() {
+    _classCallCheck(this, ChartsModule);
+
+    // cache elements from page
+    this.chart = (0, _jquery2.default)('.services__chart-item');
+    this.logSomething();
+
+    this.chart.peity("donut");
+  }
+
+  // custom functions
+
+
+  _createClass(ChartsModule, [{
+    key: 'logSomething',
+    value: function logSomething() {
+      (function (k, w, h, v) {
+        var d = k.fn.peity = function (a, b) {
+          y && this.each(function () {
+            var e = k(this),
+                c = e.data("_peity");c ? (a && (c.type = a), k.extend(c.opts, b)) : (c = new x(e, a, k.extend({}, d.defaults[a], e.data("peity"), b)), e.change(function () {
+              c.draw();
+            }).data("_peity", c));c.draw();
+          });return this;
+        },
+            x = function x(a, b, e) {
+          this.$el = a;this.type = b;this.opts = e;
+        },
+            o = x.prototype,
+            q = o.svgElement = function (a, b) {
+          return k(w.createElementNS("http://www.w3.org/2000/svg", a)).attr(b);
+        },
+            y = "createElementNS" in w && q("svg", {})[0].createSVGRect;o.draw = function () {
+          var a = this.opts;d.graphers[this.type].call(this, a);a.after && a.after.call(this, a);
+        };o.fill = function () {
+          var a = this.opts.fill;return k.isFunction(a) ? a : function (b, e) {
+            return a[e % a.length];
+          };
+        };o.prepare = function (a, b) {
+          this.$svg || this.$el.hide().after(this.$svg = q("svg", { "class": "peity" }));return this.$svg.empty().data("peity", this).attr({ height: b, width: a });
+        };o.values = function () {
+          return k.map(this.$el.text().split(this.opts.delimiter), function (a) {
+            return parseFloat(a);
+          });
+        };d.defaults = {};d.graphers = {};d.register = function (a, b, e) {
+          this.defaults[a] = b;this.graphers[a] = e;
+        };d.register("pie", { fill: ["#ff9900", "#fff4dd", "#ffc66e"], radius: 8 }, function (a) {
+          if (!a.delimiter) {
+            var b = this.$el.text().match(/[^0-9\.]/);a.delimiter = b ? b[0] : ",";
+          }b = k.map(this.values(), function (a) {
+            return 0 < a ? a : 0;
+          });if ("/" == a.delimiter) var e = b[0],
+              b = [e, h.max(0, b[1] - e)];for (var c = 0, e = b.length, t = 0; c < e; c++) {
+            t += b[c];
+          }t || (e = 2, t = 1, b = [0, 1]);var l = 2 * a.radius,
+              l = this.prepare(a.width || l, a.height || l),
+              c = l.width(),
+              f = l.height(),
+              j = c / 2,
+              d = f / 2,
+              f = h.min(j, d),
+              a = a.innerRadius;
+          "donut" == this.type && !a && (a = 0.5 * f);for (var r = h.PI, s = this.fill(), g = this.scale = function (a, b) {
+            var c = a / t * r * 2 - r / 2;return [b * h.cos(c) + j, b * h.sin(c) + d];
+          }, m = 0, c = 0; c < e; c++) {
+            var u = b[c],
+                i = u / t;if (0 != i) {
+              if (1 == i) {
+                if (a) var i = j - 0.01,
+                    p = d - f,
+                    n = d - a,
+                    i = q("path", { d: ["M", j, p, "A", f, f, 0, 1, 1, i, p, "L", i, n, "A", a, a, 0, 1, 0, j, n].join(" ") });else i = q("circle", { cx: j, cy: d, r: f });
+              } else p = m + u, n = ["M"].concat(g(m, f), "A", f, f, 0, 0.5 < i ? 1 : 0, 1, g(p, f), "L"), a ? n = n.concat(g(p, a), "A", a, a, 0, 0.5 < i ? 1 : 0, 0, g(m, a)) : n.push(j, d), m += u, i = q("path", { d: n.join(" ") });
+              i.attr("fill", s.call(this, u, c, b));l.append(i);
+            }
+          }
+        });d.register("donut", k.extend(!0, {}, d.defaults.pie), function (a) {
+          d.graphers.pie.call(this, a);
+        });d.register("line", { delimiter: ",", fill: "#c6d9fd", height: 16, min: 0, stroke: "#4d89f9", strokeWidth: 1, width: 32 }, function (a) {
+          var b = this.values();1 == b.length && b.push(b[0]);for (var e = h.max.apply(h, a.max == v ? b : b.concat(a.max)), c = h.min.apply(h, a.min == v ? b : b.concat(a.min)), d = this.prepare(a.width, a.height), l = a.strokeWidth, f = d.width(), j = d.height() - l, k = e - c, e = this.x = function (a) {
+            return a * (f / (b.length - 1));
+          }, r = this.y = function (a) {
+            var b = j;k && (b -= (a - c) / k * j);return b + l / 2;
+          }, s = r(h.max(c, 0)), g = [0, s], m = 0; m < b.length; m++) {
+            g.push(e(m), r(b[m]));
+          }g.push(f, s);a.fill && d.append(q("polygon", { fill: a.fill, points: g.join(" ") }));l && d.append(q("polyline", { fill: "none", points: g.slice(2, g.length - 2).join(" "), stroke: a.stroke, "stroke-width": l, "stroke-linecap": "square" }));
+        });d.register("bar", { delimiter: ",", fill: ["#4D89F9"], height: 16, min: 0, padding: 0.1, width: 32 }, function (a) {
+          for (var b = this.values(), e = h.max.apply(h, a.max == v ? b : b.concat(a.max)), c = h.min.apply(h, a.min == v ? b : b.concat(a.min)), d = this.prepare(a.width, a.height), l = d.width(), f = d.height(), j = e - c, a = a.padding, k = this.fill(), r = this.x = function (a) {
+            return a * l / b.length;
+          }, s = this.y = function (a) {
+            return f - (j ? (a - c) / j * f : 1);
+          }, g = 0; g < b.length; g++) {
+            var m = r(g + a),
+                u = r(g + 1 - a) - m,
+                i = b[g],
+                p = s(i),
+                n = p,
+                o;j ? 0 > i ? n = s(h.min(e, 0)) : p = s(h.max(c, 0)) : o = 1;o = p - n;0 == o && (o = 1, 0 < e && j && n--);d.append(q("rect", { fill: k.call(this, i, g, b), x: m, y: n, width: u, height: o }));
+          }
+        });
+      })(_jquery2.default, document, Math);
+    }
+  }]);
+
+  return ChartsModule;
+}();
+
+exports.default = ChartsModule;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _jquery = __webpack_require__(0);
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -12112,8 +12243,10 @@ var TestModule = function () {
 
     // cache elements from page
     this.titles = (0, _jquery2.default)('h1');
-
+    this.quals = (0, _jquery2.default)('.team__qual-line');
+    console.log(this.qualsPercents);
     this.events();
+    this.setPercentWidth(this.quals);
   }
 
   _createClass(TestModule, [{
@@ -12129,6 +12262,16 @@ var TestModule = function () {
     value: function logSomething() {
       console.log("You clicked me!");
     }
+  }, {
+    key: 'setPercentWidth',
+    value: function setPercentWidth($els) {
+      $els.each(function (index) {
+        var perc = (0, _jquery2.default)(this).data('percents');
+        var el = (0, _jquery2.default)('<div>');
+        el.width(perc + "%");
+        (0, _jquery2.default)(this).append(el);
+      });
+    }
   }]);
 
   return TestModule;
@@ -12137,7 +12280,7 @@ var TestModule = function () {
 exports.default = TestModule;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12147,7 +12290,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _jquery = __webpack_require__(6);
+var _jquery = __webpack_require__(0);
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -12157,7 +12300,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Isotope = __webpack_require__(12);
+var Isotope = __webpack_require__(13);
 
 var MasonryModule = function MasonryModule() {
   var _ref;
@@ -12199,28 +12342,33 @@ var MasonryModule = function MasonryModule() {
 exports.default = MasonryModule;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _TestModule = __webpack_require__(8);
+var _TestModule = __webpack_require__(9);
 
 var _TestModule2 = _interopRequireDefault(_TestModule);
 
-var _masonry = __webpack_require__(9);
+var _masonry = __webpack_require__(10);
 
 var _masonry2 = _interopRequireDefault(_masonry);
+
+var _Charts = __webpack_require__(8);
+
+var _Charts2 = _interopRequireDefault(_Charts);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var testModule = new _TestModule2.default();
 var masonry = new _masonry2.default();
+var charts = new _Charts2.default();
 
 /***/ }),
-/* 11 */,
-/* 12 */
+/* 12 */,
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -12239,16 +12387,16 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
   if ( true ) {
     // AMD
     !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-        __webpack_require__(2),
-        __webpack_require__(0),
         __webpack_require__(3),
-        __webpack_require__(5),
-        __webpack_require__(13),
         __webpack_require__(1),
-        // include default layout modes
-        __webpack_require__(15),
+        __webpack_require__(4),
+        __webpack_require__(6),
         __webpack_require__(14),
-        __webpack_require__(16)
+        __webpack_require__(2),
+        // include default layout modes
+        __webpack_require__(16),
+        __webpack_require__(15),
+        __webpack_require__(17)
       ], __WEBPACK_AMD_DEFINE_RESULT__ = function( Outlayer, getSize, matchesSelector, utils, Item, LayoutMode ) {
         return factory( window, Outlayer, getSize, matchesSelector, utils, Item, LayoutMode );
       }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
@@ -12847,7 +12995,7 @@ var trim = String.prototype.trim ?
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -12860,7 +13008,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   if ( true ) {
     // AMD
     !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-        __webpack_require__(2)
+        __webpack_require__(3)
       ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
@@ -12932,7 +13080,7 @@ return Item;
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -12945,7 +13093,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   if ( true ) {
     // AMD
     !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-        __webpack_require__(1)
+        __webpack_require__(2)
       ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
@@ -13008,7 +13156,7 @@ return FitRows;
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -13023,8 +13171,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   if ( true ) {
     // AMD
     !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-        __webpack_require__(1),
-        __webpack_require__(17)
+        __webpack_require__(2),
+        __webpack_require__(18)
       ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
@@ -13090,7 +13238,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -13103,7 +13251,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   if ( true ) {
     // AMD
     !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-        __webpack_require__(1)
+        __webpack_require__(2)
       ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
@@ -13152,7 +13300,7 @@ return Vertical;
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -13169,8 +13317,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   if ( true ) {
     // AMD
     !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-        __webpack_require__(2),
-        __webpack_require__(0)
+        __webpack_require__(3),
+        __webpack_require__(1)
       ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
@@ -13399,7 +13547,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -13412,8 +13560,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   if ( true ) {
     // AMD - RequireJS
     !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-        __webpack_require__(4),
-        __webpack_require__(0)
+        __webpack_require__(5),
+        __webpack_require__(1)
       ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),

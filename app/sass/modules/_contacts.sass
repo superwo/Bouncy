@@ -1,0 +1,101 @@
+.newsletter
+  background-image: url(../img/news-bg.jpg)
+  background-size: cover
+
+
+  .section__title
+    color: #fff
+
+.contacts
+  &__list
+    display: flex
+    justify-content: center
+  &__item
+    height: 272px
+    width: 287px
+    background-color: #fff
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.05)
+    margin-right: 40px
+    &:last-child
+      margin-right: 0
+    &-header
+      background-image: url(../img/c-bg1.jpg)
+      background-size: cover
+      height: 145px
+      display: flex
+      align-items: center
+      justify-content: center
+  &__info
+    text-align: center
+    &-title
+      font-size: 16px
+      margin: 20px 0 10px
+      text-transform: uppercase
+  &__det
+    display: block
+    font-size: 14px
+    color: #81868e
+    text-transform: uppercase
+.feedback
+  // padding-bottom: 130px
+  .form
+    color: $text-color
+    input[type=submit]
+      max-width: 1092px
+      width: 100%
+      height: 54px
+      font-size: 16px
+
+.form
+  text-align: center
+  input[type=text], input[type=email], textarea
+    max-width: 358px
+    width: 100%
+    color: #cfd3d4
+    padding: 20px 0 20px 23px
+    background-color: transparent
+    border: 1px solid $text-color
+    margin-right: 5px
+  textarea
+    max-width: 1092px
+    height: 190px
+    margin-top: 30px
+  input[type=submit]
+    height: 42px
+    width: 151px
+    background-color: $accent
+    border: none
+    color: #fff
+    font-size: 14px
+    text-transform: uppercase
+    transition: bacground-color 200ms ease-in-out
+    &:hover
+      background-color: darken($accent, 10%)
+
+.map
+  position: relative
+  &:hover
+    .map__overlay
+      opacity: 0
+  &__overlay
+    pointer-events: none
+    transition: all 200ms ease-in-out
+    opacity: 1
+    +coverdiv
+    background-color: rgba(0,0,0,0.85)
+    display: flex
+    justify-content: center
+    align-items: center
+    &-title
+      color: #fff
+      text-transform: uppercase
+      margin-right: 16px
+    &-icon
+      +size(18px)
+      border-radius: 50%
+      background-color: $accent
+      line-height: 18px
+      text-align: center
+  &__image
+    width: 100%
+    height: auto

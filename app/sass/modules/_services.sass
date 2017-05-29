@@ -16,6 +16,24 @@
         background-color: $accent
       &:last-child
         margin-bottom: 0
+  &__chart
+    +size(122px)
+    position: relative
+    display: inline-block
+    margin-left: 40px
+    margin-top: 60px
+    &-perc
+      position: absolute
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%)
+      font-size: 25px
+    &-title
+      position: absolute
+      left: 50%
+      transform: translateX(-50%)
+      bottom: -40px
+      white-space: nowrap
 
 .impression
   background-image: url(../img/imp-bg.jpg)
